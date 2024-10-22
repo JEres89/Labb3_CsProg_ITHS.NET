@@ -7,6 +7,20 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
-            
+        <Menu>
+            <MenuItem Header="_File" >
+                <MenuItem Command="ApplicationCommands.Open"/>
+                <MenuItem Command="ApplicationCommands.Save"/>
+
+            </MenuItem>
+            <MenuItem Header="_Edit">
+
+                <MenuItem Command="ApplicationCommands.Cut"/>
+                <MenuItem Command="ApplicationCommands.Paste"/>
+            </MenuItem>
+            <MenuItem Header="_View">
+
+            </MenuItem>
+        </Menu>
     </Grid>
 </UserControl>

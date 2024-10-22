@@ -3,10 +3,38 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:Labb3_CsProg_ITHS.NET.Views"
+             xmlns:local="clr-namespace:Labb3_CsProg_ITHS.NET.Views" 
+             xmlns:viewmodels="clr-namespace:Labb3_CsProg_ITHS.NET.ViewModels" 
+             
              mc:Ignorable="d" 
+             d:DataContext="{d:DesignInstance Type=viewmodels:ConfigurationViewModel}" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
+    <Grid >
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        
+        <StackPanel Grid.ColumnSpan="2" Orientation="Horizontal" MaxHeight="30" HorizontalAlignment="Left">
+            <Button x:Name="NewQuizBtn" Content="New Quiz-Pack" Margin="10,2,0,2" Padding="3,0" HorizontalAlignment="Left" HorizontalContentAlignment="Center" VerticalAlignment="Stretch" Command="{Binding NewPackCommand}"/>
+            <!--<Grid VerticalAlignment="Top">
+                <TextBox x:Name="elementName" Width="100" VerticalContentAlignment="Center" TextChanged="elementName_TextChanged" GotFocus="elementName_GotFocus" LostFocus="elementName_LostFocus"/>
+                <Label x:Name="txtNamePlaceholder"  Content="Name..." Background="Transparent" Opacity="0.5" IsHitTestVisible="False"/>
+            </Grid>-->
+            <ComboBox x:Name="elementType" Width="{Binding ElementName=NewQuizBtn, Path=ActualWidth}" VerticalContentAlignment="Center" VerticalAlignment="Center" Margin="10,2,0,2" ItemsSource="{Binding Packs}" SelectedItem="{Binding SelectedPack, Mode=TwoWay}"/>
+
+        </StackPanel>
+
+        <ListView Grid.Row="1" ItemsSource="{Binding Questions, Mode=OneWay}"
+                  SelectedItem="{Binding SelectedQuestion, Mode=TwoWay}"
+                  HorizontalAlignment="Stretch"
+                  VerticalAlignment="Stretch" VerticalContentAlignment="Stretch">
             
+        </ListView>
+        <!--<TextBlock Grid.Row="0" Text="{Binding ContentName}" Grid.ColumnSpan="2" Background="White" VerticalAlignment="Top" Padding="10,5" />-->
     </Grid>
 </UserControl>

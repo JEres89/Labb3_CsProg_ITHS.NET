@@ -1,0 +1,90 @@
+﻿<Window x:Class="Labb3_CsProg_ITHS.NET.Dialogs.CreatePackDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Labb3_CsProg_ITHS.NET.Dialogs"
+        xmlns:viewmodels="clr-namespace:Labb3_CsProg_ITHS.NET.ViewModels" 
+        mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance Type=viewmodels:CreatePackViewModel}" 
+        Title="New Pack" Height="300" Width="350">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="2*"/>
+            <RowDefinition Height="2*"/>
+            <RowDefinition Height="2*"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20">Create new Question Pack</TextBlock>
+        <StackPanel Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="150">
+            <Label Content="Pack _Name" FontSize="16"/>
+            <TextBox TextWrapping="NoWrap" FontSize="16" Text="{Binding Name}"></TextBox>
+        </StackPanel>
+        <StackPanel Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center" Width="150">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <Label 
+                    Grid.Column="0" 
+                    HorizontalAlignment="Left" 
+                    VerticalAlignment="Center" 
+                    Content="_Difficulty:" 
+                    FontSize="16"
+                    />
+                <TextBlock 
+                    Grid.Column="1" 
+                    HorizontalAlignment="Left" 
+                    VerticalAlignment="Center" 
+                    FontSize="16" 
+                    Text="{Binding Path=DifficultyName}" 
+                    />
+            </Grid>
+            <Slider 
+                Width="150" 
+                FontSize="16" 
+                Ticks="{Binding Path=DiffSliderValues}" 
+                TickPlacement="BottomRight" 
+                IsSnapToTickEnabled="True" 
+                Value="{Binding Path=DifficultyDouble}" 
+                Minimum="{Binding Minimum}" 
+                Maximum="{Binding Maximum}" 
+                />
+        </StackPanel>
+        <StackPanel Grid.Row="3" HorizontalAlignment="Center" VerticalAlignment="Center" Width="150">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="8*"/>
+                    <ColumnDefinition Width="3*"/>
+                </Grid.ColumnDefinitions>
+                <Label 
+                    Grid.Column="0" 
+                    HorizontalAlignment="Left" 
+                    VerticalAlignment="Center" 
+                    Content="_Time Limit (s):" 
+                    FontSize="16"
+                    />
+                <TextBox 
+                    Grid.Column="1" 
+                    HorizontalAlignment="Stretch" 
+                    HorizontalContentAlignment="Right" 
+                    VerticalAlignment="Center" 
+                    FontSize="16">
+                    <TextBox.Text>
+                        <Binding 
+                            Path="TimeLimit" 
+                            Mode="TwoWay" 
+                            UpdateSourceTrigger="PropertyChanged">
+                            <Binding.ValidationRules>
+                                <viewmodels:TimeValidationRule ValidatesOnTargetUpdated="True" />
+                            </Binding.ValidationRules>
+                        </Binding>
+                    </TextBox.Text>
+                </TextBox>
+            </Grid>
+        </StackPanel>
+        
+    </Grid>
+</Window>
