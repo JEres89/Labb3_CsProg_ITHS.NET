@@ -21,8 +21,8 @@ namespace Labb3_CsProg_ITHS.NET.ViewModels
 				IsNameValid = !string.IsNullOrWhiteSpace(_name);
 			}
 		}
-
-		public double DifficultyDouble
+        internal Difficulty Difficulty { get; }
+        public double DifficultyDouble
 		{
 			get => (double)_difficulty;
 			set
@@ -58,18 +58,10 @@ namespace Labb3_CsProg_ITHS.NET.ViewModels
 
 		public RelayCommand CreateCommand { get; }
 
-		public CreatePackViewModel()
+		public CreatePackViewModel(RelayCommand createCommand)
 		{
-			CreateCommand = new RelayCommand(Create, CanCreate);
-		}
+			CreateCommand = createCommand;
 
-		private bool CanCreate(object? obj) => IsNameValid;
-
-		private void Create(object? obj)
-		{
-			// Create a new QuestionPack
-			// Add it to the QuestionPacks collection
-			// Close the dialog
 		}
 
 		public DoubleCollection DiffSliderValues

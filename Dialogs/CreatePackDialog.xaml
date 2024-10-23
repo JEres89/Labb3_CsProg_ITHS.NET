@@ -85,6 +85,18 @@
                 </TextBox>
             </Grid>
         </StackPanel>
-        
-    </Grid>
+		<StackPanel Grid.Row="4" HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Horizontal">
+			<Button 
+				Content="Create" 
+				FontSize="16" 
+				IsDefault="True"
+				Command="{Binding Path=CreatePackCommand}" 
+				/>
+			<Button 
+				Content="Cancel" 
+				FontSize="16" 
+				IsCancel="True"
+				/>
+		</StackPanel>
+	</Grid>
 </Window>

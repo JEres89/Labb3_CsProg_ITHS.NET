@@ -7,6 +7,14 @@ using System.Threading.Tasks;
 namespace Labb3_CsProg_ITHS.NET.Models;
 public class Question
 {
+	public Question()
+	{
+		Category = "General";
+		QuestionText = "What is the meaning of life?";
+		CorrectAnswer = "42";
+		IncorrectAnswers = new string[] { "24", "21", "12" };
+	}
+
 	public Question(string questionText, string correctAnswer, string[] incorrectAnswers) : this(0, 0, "General", questionText, correctAnswer, incorrectAnswers) { }
 
 	public Question(int type, int difficulty, string category, string questionText, string correctAnswer, string[] incorrectAnswers)

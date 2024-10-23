@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Labb3_CsProg_ITHS.NET.Views" 
              xmlns:viewmodels="clr-namespace:Labb3_CsProg_ITHS.NET.ViewModels" 
+             xmlns:dialogs="clr-namespace:Labb3_CsProg_ITHS.NET.Dialogs" 
              
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance Type=viewmodels:ConfigurationViewModel}" 
@@ -19,22 +20,41 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         
-        <StackPanel Grid.ColumnSpan="2" Orientation="Horizontal" MaxHeight="30" HorizontalAlignment="Left">
-            <Button x:Name="NewQuizBtn" Content="New Quiz-Pack" Margin="10,2,0,2" Padding="3,0" HorizontalAlignment="Left" HorizontalContentAlignment="Center" VerticalAlignment="Stretch" Command="{Binding NewPackCommand}"/>
+        <Grid Grid.ColumnSpan="2" MaxHeight="30" HorizontalAlignment="Stretch" >
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="*" />
+				<ColumnDefinition Width="*" />
+				<ColumnDefinition Width="*" />
+				<ColumnDefinition Width="*" />
+				<ColumnDefinition Width="4*" />
+			</Grid.ColumnDefinitions>
+
+            <Button x:Name="NewQuizBtn" Content="New Quiz-Pack" Margin="10,2,0,2" Padding="3,0" HorizontalAlignment="Left" HorizontalContentAlignment="Center" VerticalAlignment="Stretch" Click="NewQuizBtn_Click"/>
             <!--<Grid VerticalAlignment="Top">
                 <TextBox x:Name="elementName" Width="100" VerticalContentAlignment="Center" TextChanged="elementName_TextChanged" GotFocus="elementName_GotFocus" LostFocus="elementName_LostFocus"/>
                 <Label x:Name="txtNamePlaceholder"  Content="Name..." Background="Transparent" Opacity="0.5" IsHitTestVisible="False"/>
             </Grid>-->
-            <ComboBox x:Name="elementType" Width="{Binding ElementName=NewQuizBtn, Path=ActualWidth}" VerticalContentAlignment="Center" VerticalAlignment="Center" Margin="10,2,0,2" ItemsSource="{Binding Packs}" SelectedItem="{Binding SelectedPack, Mode=TwoWay}"/>
+			<ComboBox Grid.Column="1" Width="{Binding ElementName=NewQuizBtn, Path=ActualWidth}" VerticalContentAlignment="Center" VerticalAlignment="Center" Margin="10,2,0,2" ItemsSource="{Binding Packs}" SelectedItem="{Binding SelectedPack, Mode=TwoWay}"/>
+			<FrameworkElement Grid.Column="2" HorizontalAlignment="Stretch" />
+			<Button Grid.Column="3" Content="Add Question" Width="{Binding ElementName=NewQuizBtn, Path=ActualWidth}" Margin="0,2,10,2" HorizontalAlignment="Right" HorizontalContentAlignment="Center" VerticalAlignment="Stretch"  Command="{Binding NewQuestionCommand}"/>
 
-        </StackPanel>
+		</Grid>
 
-        <ListView Grid.Row="1" ItemsSource="{Binding Questions, Mode=OneWay}"
+		<ListView Grid.Row="1" ItemsSource="{Binding Questions, Mode=OneWay}"
                   SelectedItem="{Binding SelectedQuestion, Mode=TwoWay}"
                   HorizontalAlignment="Stretch"
-                  VerticalAlignment="Stretch" VerticalContentAlignment="Stretch">
-            
-        </ListView>
-        <!--<TextBlock Grid.Row="0" Text="{Binding ContentName}" Grid.ColumnSpan="2" Background="White" VerticalAlignment="Top" Padding="10,5" />-->
+                  VerticalAlignment="Stretch" VerticalContentAlignment="Stretch"/>
+
+		<Grid Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+			<Grid.RowDefinitions>
+				<RowDefinition Height="*"/>
+				<RowDefinition Height="2*"/>
+				<RowDefinition Height="2*"/>
+				<RowDefinition Height="2*"/>
+				<RowDefinition Height="*"/>
+			</Grid.RowDefinitions>
+			
+		</Grid>
+			<!--<TextBlock Grid.Row="0" Text="{Binding ContentName}" Grid.ColumnSpan="2" Background="White" VerticalAlignment="Top" Padding="10,5" />-->
     </Grid>
 </UserControl>
