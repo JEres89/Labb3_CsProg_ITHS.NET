@@ -14,6 +14,7 @@ public class Question
 		CorrectAnswer = "42";
 		IncorrectAnswers = new string[] { "24", "21", "12" };
 	}
+	public Question(Question question) : this(question.Type, question.Difficulty, question.Category, question.QuestionText, question.CorrectAnswer, (string[])question.IncorrectAnswers.Clone()) { }
 
 	public Question(string questionText, string correctAnswer, string[] incorrectAnswers) : this(0, 0, "General", questionText, correctAnswer, incorrectAnswers) { }
 

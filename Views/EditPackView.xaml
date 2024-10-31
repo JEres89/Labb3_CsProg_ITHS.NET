@@ -1,41 +1,44 @@
-﻿<Window 
-    x:Class="Labb3_CsProg_ITHS.NET.Dialogs.CreatePackDialog"
+﻿<UserControl 
+    x:Class="Labb3_CsProg_ITHS.NET.Views.EditPackView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:local="clr-namespace:Labb3_CsProg_ITHS.NET.Dialogs"
-    xmlns:views="clr-namespace:Labb3_CsProg_ITHS.NET.Views"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Labb3_CsProg_ITHS.NET.Views"
     xmlns:viewmodels="clr-namespace:Labb3_CsProg_ITHS.NET.ViewModels" 
     mc:Ignorable="d"
     d:DataContext="{d:DesignInstance Type=viewmodels:ConfigurePackViewModel}" 
-    Title="New Pack" Height="300" Width="250">
+    d:DesignHeight="400" d:DesignWidth="400" d:Background="White"
 	
+	>
+	<UserControl.Resources>
+		<BooleanToVisibilityConverter x:Key="boolToVisibilityConverter"/>
+	</UserControl.Resources>
 	<Grid>
 		<Grid.RowDefinitions>
 			<RowDefinition Height="7*"/>
 			<RowDefinition Height="*"/>
 		</Grid.RowDefinitions>
 
-		<views:PackOptionsView Grid.Row="0" Header="Create new pack"/>
-		
+		<local:PackOptionsView Grid.Row="0" Header="Edit Quiz settings"/>
+
 		<StackPanel Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Horizontal">
 			<Button 
-				Margin="20,0"
+				Margin="30,0"
 				Width="70"
-				Content="Create"
+				Content="Save"
 				FontSize="16"
-				IsDefault="True"
 				Command="{Binding Path=SaveCommand}"
 				CommandParameter="{Binding Path=Pack}"
 				/>
 			<Button 
+				Margin="30,0"
 				Width="70"
-				Margin="20,0"
 				Content="Cancel"
 				FontSize="16"
 				IsCancel="True"
+				Command="{Binding Path=CancelCommand}"
 				/>
 		</StackPanel>
 	</Grid>
-</Window>
+</UserControl>

@@ -17,10 +17,20 @@ namespace Labb3_CsProg_ITHS.NET.ViewModels
 			_canExecute = canExecute;
 		}
 
+		public void SetCanExecute(Func<object?, bool> canExecute)
+		{
+			_canExecute = canExecute;
+		}
+
 		public event EventHandler? CanExecuteChanged;
 
 		public bool CanExecute(object? parameter) => _canExecute == null || _canExecute(parameter);
 
 		public void Execute(object? parameter) => _execute(parameter);
+
+		internal void RaiseCanExecuteChanged()
+		{
+			CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+		}
 	}
 }
