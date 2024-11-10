@@ -4,17 +4,19 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:converters="clr-namespace:Labb3_CsProg_ITHS.NET.Converters"
 	xmlns:local="clr-namespace:Labb3_CsProg_ITHS.NET.Views"
 	xmlns:viewmodels="clr-namespace:Labb3_CsProg_ITHS.NET.ViewModels"
 	xmlns:dialogs="clr-namespace:Labb3_CsProg_ITHS.NET.Dialogs"
+	DataContext="{Binding ConfigurePackViewModel}"
 	
 	mc:Ignorable="d"
 	d:DataContext="{d:DesignInstance Type=viewmodels:ConfigurePackViewModel}"
 	d:DesignHeight="400" d:DesignWidth="400"
 >
 	<UserControl.Resources>
-		<viewmodels:TimeStringConverter x:Key="timeStringConverter" />
-		<viewmodels:DifficultyConverter x:Key="difficultyConverter" />
+		<converters:TimeStringConverter x:Key="timeStringConverter" />
+		<converters:DifficultyConverter x:Key="difficultyConverter" />
 	</UserControl.Resources>
 	<Grid>
 		<Grid.RowDefinitions>
@@ -26,7 +28,7 @@
 		<TextBlock x:Name="HeaderBlock" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20" />
 		<StackPanel Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="150">
 			<Label Content="Pack _Name" FontSize="16"/>
-			<TextBox TextWrapping="NoWrap" FontSize="16" Text="{Binding Path=Pack.Name, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+			<TextBox TextWrapping="NoWrap" FontSize="16" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"></TextBox>
 		</StackPanel>
 		<StackPanel Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center" Width="150">
 			<Grid>
@@ -46,16 +48,16 @@
                     HorizontalAlignment="Left" 
                     VerticalAlignment="Center" 
                     FontSize="16" 
-                    Text="{Binding Path=DifficultyName}" 
+                    Text="{Binding Difficulty}" 
                     />
 			</Grid>
 			<Slider 
                 Width="150" 
                 FontSize="16" 
-                Ticks="{Binding Path=DiffSliderValues}" 
+                Ticks="{Binding Path=DiffSliderValues, Mode=OneTime}" 
                 TickPlacement="BottomRight" 
                 IsSnapToTickEnabled="True" 
-                Value="{Binding Path=Pack.Difficulty, Converter={StaticResource difficultyConverter}}"
+                Value="{Binding Difficulty, Converter={StaticResource difficultyConverter}}"
                 Minimum="{Binding Minimum}" 
                 Maximum="{Binding Maximum}" 
                 />
@@ -82,7 +84,8 @@
 					>
 					<TextBox.Text>
 						<Binding 
-                            Path="Pack.TimeLimit" 
+							
+                            Path="TimeLimit" 
 							Converter="{StaticResource timeStringConverter}"
                             Mode="TwoWay" 
                             UpdateSourceTrigger="PropertyChanged"

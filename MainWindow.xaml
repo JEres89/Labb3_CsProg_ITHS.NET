@@ -1,19 +1,29 @@
-﻿<Window x:Class="Labb3_CsProg_ITHS.NET.MainWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Labb3_CsProg_ITHS.NET" 
-        xmlns:views="clr-namespace:Labb3_CsProg_ITHS.NET.Views"
-        mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid d:ShowGridLines="True" x:Name="contentGrid">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="auto" MaxHeight="30"></RowDefinition>
-            <RowDefinition Height="*" ></RowDefinition>
-        </Grid.RowDefinitions>
-        <views:MenuView />
-        
-        <views:ConfigurationView Grid.Row="1"/>
-    </Grid>
+﻿<Window 
+	x:Class="Labb3_CsProg_ITHS.NET.MainWindow"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:local="clr-namespace:Labb3_CsProg_ITHS.NET" 
+	xmlns:views="clr-namespace:Labb3_CsProg_ITHS.NET.Views"
+	xmlns:viewmodels="clr-namespace:Labb3_CsProg_ITHS.NET.ViewModels"
+	xmlns:dialogs="clr-namespace:Labb3_CsProg_ITHS.NET.Dialogs"
+	xmlns:models="clr-namespace:Labb3_CsProg_ITHS.NET.Models"
+	
+	mc:Ignorable="d"
+	Title="MainWindow" Height="450" Width="800"
+	MinHeight="430" MinWidth="690"
+	
+	d:DataContext="{d:DesignInstance Type=viewmodels:MainWindowsViewModel}"
+	>
+	<Grid d:ShowGridLines="True" x:Name="contentGrid">
+		<Grid.RowDefinitions>
+			<RowDefinition Height="auto" MaxHeight="30"></RowDefinition>
+			<RowDefinition Height="*" ></RowDefinition>
+		</Grid.RowDefinitions>
+		<views:MenuView />
+
+		<views:ConfigurationView Grid.Row="1"/>
+		<views:PlayerView Grid.Row="1" Visibility="Hidden"/>
+	</Grid>
 </Window>

@@ -13,35 +13,67 @@ namespace Labb3_CsProg_ITHS.NET.Views;
 public partial class ConfigurationView : UserControl
 {
 	private ConfigurationViewModel _viewModel;
+
+	public ConfigurationViewModel ViewModel => _viewModel;
+
 	public ConfigurationView()
 	{
-		DataContext = _viewModel = new ConfigurationViewModel();
 
-		NewQuizCommand = new(_ => new CreatePackDialog(_viewModel.NewPackCommand).ShowDialog());
 
-		EditQuizViewCommand = new(
-			_ => EditQuiz(), 
-			_viewModel.EditPackCommand.CanExecute);
-		_viewModel.EditPackCommand.CanExecuteChanged += (_,_) => EditQuizViewCommand.RaiseCanExecuteChanged();
+		DataContextChanged += ConfigurationView_DataContextChanged;
 		InitializeComponent();
 	}
-	
-	public RelayCommand NewQuizCommand { get; private set; }
-	public RelayCommand EditQuizViewCommand { get; private set; }
+
+	private void ConfigurationView_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
+	{
+		if(DataContext is ConfigurationViewModel cfg)
+		{
+			_viewModel = cfg;
+		}
+		else
+		{
+			throw new("Invalid DataContext");
+		}
+
+		_viewModel.NewQuiz_ViewCommand = new(
+			_ => new CreatePackDialog(ViewModel.NewPackCommand).ShowDialog()
+			);
+
+		_viewModel.NewQuestion_ViewCommand = new(
+			_ => new CreateQuestionDialog(ViewModel.NewQuestionCommand).ShowDialog(),
+			_ => ViewModel.NewQuestionCommand.CanExecute(_));
+	}
+
+		//_viewModel.EditQuiz_ViewCommand = new(
+		//	_ => {
+		//		ViewModel.EditPackCommand.Execute(null);
+		//		EditQuiz(); },
+		//	_ => ViewModel.EditPackCommand.CanExecute(null)
+		//	);
+	//}
+
+	//public RelayCommand NewQuiz_ViewCommand { get; private set; }
+	//public RelayCommand EditQuiz_ViewCommand { get; private set; }
+	//public RelayCommand NewQuestion_ViewCommand { get; private set; }
+	//public RelayCommand EditQuestion_ViewCommand { get; private set; }
+	//Selected="{Binding EditQuestion_ViewCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorLevel=1, AncestorType=local:ConfigurationView} }"
+
 	//private void NewQuiz()
 	//{
 	//	var newDialog = new CreatePackDialog(_viewModel.NewPackCommand);
 	//	_ = newDialog.ShowDialog();
 	//}
-	private void EditQuiz()
-	{
-		if(_viewModel.SelectedPack == null) return;
-
-		_viewModel.EditPackCommand.Execute(null);
-
-		PropertiesView.StartEdit(_viewModel.SelectedPack, EditQuizViewCommand);
-		//PropertiesView.Content = new EditPackView(_viewModel.SelectedPack, new(_ => PropertiesView.Content = null));
-	}
+	//private void EditQuiz()
+	//{
+	//	//_viewModel.ConfigurePackViewModel!.CloseCommand = new(_ =>
+	//	//{
+	//	//	QuizPropertiesEdit.Close();
+	//	//	_viewModel.ConfigurePackViewModel = null;
+	//	//});
+	//	//QuizPropertiesEdit.ViewModel = _viewModel.ConfigurePackViewModel;
+	//	//QuizPropertiesEdit.StartEdit();
+	//	//QuizPropertiesEdit.Content = new EditPackView(_viewModel.SelectedPack, new(_ => QuizPropertiesEdit.Content = null));
+	//}
 }
 
 //public class QuizTemplateSelector : DataTemplateSelector
@@ -100,7 +132,3 @@ public partial class ConfigurationView : UserControl
 //		return base.SelectTemplate(item, container);
 //	}
 //}
-//{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorLevel=3, AncestorType=local:ConfigurationView}, Path=EditQuizViewCommand }
-//{Binding Source=ConfigurationView, Path=EditQuizViewCommand }
-//<CollectionViewSource x:Key="dataContext" Source="{Binding}" />
-//<CollectionContainer x:Name="newPacksCon" Collection="{Binding Source={StaticResource dataContext}, Path=NewPacks}" />

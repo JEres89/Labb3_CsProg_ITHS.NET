@@ -9,11 +9,17 @@
 	xmlns:viewmodels="clr-namespace:Labb3_CsProg_ITHS.NET.ViewModels"
 	xmlns:dialogs="clr-namespace:Labb3_CsProg_ITHS.NET.Dialogs"
 	xmlns:models="clr-namespace:Labb3_CsProg_ITHS.NET.Models"
+	DataContext="{Binding ConfigViewModel}"
 	
 	mc:Ignorable="d"
 	d:DataContext="{d:DesignInstance Type=viewmodels:ConfigurationViewModel}"
 	d:DesignHeight="450" d:DesignWidth="800"
+	MinHeight="370" MinWidth="530"
 >
+	
+	<UserControl.Resources>
+		<BooleanToVisibilityConverter x:Key="boolToVisibilityConverter"/>
+	</UserControl.Resources>
 	<!--<UserControl.Resources>
 		<DataTemplate DataType="{x:Type viewmodels:DomainQuestionPack}">
 			<TextBlock>
@@ -46,34 +52,93 @@
 			<RowDefinition Height="*"/>
 		</Grid.RowDefinitions>
 
-		<Grid Grid.ColumnSpan="2" MaxHeight="30" HorizontalAlignment="Stretch" >
+		<Grid MaxHeight="30" HorizontalAlignment="Stretch" >
 			<Grid.ColumnDefinitions>
-				<ColumnDefinition Width="*" />
-				<ColumnDefinition Width="*" />
-				<ColumnDefinition Width="*" />
-				<ColumnDefinition Width="*" />
-				<ColumnDefinition Width="4*" />
+				<ColumnDefinition Width="0.5*" />
+				<ColumnDefinition Width="1.5*" />
+				<ColumnDefinition Width="2*" />
+				<ColumnDefinition Width="1.5*" />
+				<ColumnDefinition Width="1*" />
+				<ColumnDefinition Width="1*" />
+				<ColumnDefinition Width="0.5*" />
 			</Grid.ColumnDefinitions>
+			
+			<TextBlock 
+				Text="Questions: " 
+				Grid.Column="1" 
+				Margin="2" 
+				HorizontalAlignment="Stretch" 
+				TextAlignment="Justify"
+				VerticalAlignment="Center" 
+				/>
 			<Button 
-				Content="New Quiz"
+				Content="Edit Questions" 
+				Grid.Column="2" 
+				Margin="2" 
+				HorizontalAlignment="Stretch" 
+				HorizontalContentAlignment="Center" 
+				VerticalAlignment="Stretch" 
+				Command="{Binding EditQuestionsCommand}"
+				/>
+			
+			<Button 
+				Content="Add" 
+				Grid.Column="4" 
+				Margin="2" 
+				HorizontalAlignment="Stretch" 
+				HorizontalContentAlignment="Center" 
+				VerticalAlignment="Stretch" 
+				Command="{Binding NewQuestion_ViewCommand}"
+				/>
+			
+			<Button 
+				Content="Delete"
+				Grid.Column="5" 
 				Margin="2" 
 				HorizontalAlignment="Stretch" 
 				HorizontalContentAlignment="Center" 
 				VerticalAlignment="Stretch" 				
-				Command="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorLevel=1, AncestorType=local:ConfigurationView}, Path=NewQuizCommand }"
+				Command="{Binding DeleteQuestionCommand}"
 				/>
+			
+		</Grid>
 
-			<!--<Grid VerticalAlignment="Top">
-				<TextBox x:Name="elementName" Width="100" VerticalContentAlignment="Center" TextChanged="elementName_TextChanged" GotFocus="elementName_GotFocus" LostFocus="elementName_LostFocus"/>
-				<Label x:Name="txtNamePlaceholder"  Content="Name..." Background="Transparent" Opacity="0.5" IsHitTestVisible="False"/>
-			</Grid>-->
+		<Grid MaxHeight="30" HorizontalAlignment="Stretch" Grid.Column="1">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="0.5*" />
+				<ColumnDefinition Width="*" />
+				<ColumnDefinition Width="*" />
+				<ColumnDefinition Width="3*" />
+				<ColumnDefinition Width="*" />
+				<ColumnDefinition Width="*" />
+				<ColumnDefinition Width="0.5*" />
+			</Grid.ColumnDefinitions>
+
+			<TextBlock 
+				Text="Quiz: " 
+				Grid.Column="1" 
+				Margin="2" 
+				HorizontalAlignment="Stretch" 
+				TextAlignment="Justify" 
+				VerticalAlignment="Center" 
+				/>
+			<Button 
+				Content="New"
+				Grid.Column="2" 
+				Margin="2" 
+				HorizontalAlignment="Stretch" 
+				HorizontalContentAlignment="Center" 
+				VerticalAlignment="Stretch" 				
+				Command="{Binding NewQuiz_ViewCommand}"
+				/>
 			<ComboBox 
-				Grid.Column="4" 
+				Grid.Column="3" 
 				Margin="2" 
 				HorizontalAlignment="Stretch" 
 				HorizontalContentAlignment="Left" 
 				VerticalAlignment="Stretch" 
 				SelectedItem="{Binding SelectedPack, Mode=TwoWay}"
+				IsEnabled="{Binding IsNotEditingQuiz}"
 				>
 				<!--<ComboBox.ItemTemplateSelector>
 					<local:QuizTemplateSelector/>
@@ -85,8 +150,8 @@
 					<CollectionViewSource x:Key="deletedPacks" Source="{Binding DeletedPacks}" />
 					<DataTemplate DataType="{x:Type viewmodels:DomainQuestionPack}">
 						<TextBlock>
-					<TextBlock Text="  "/> <TextBlock Text="{Binding Path=Name}" />
-					</TextBlock>
+							<TextBlock Text="  "/> <TextBlock Text="{Binding Path=Name}" />
+						</TextBlock>
 					</DataTemplate>
 					<DataTemplate DataType="{x:Type viewmodels:NewQuestionPack}">
 						<TextBlock>
@@ -106,62 +171,88 @@
 				</ComboBox.Resources>
 				<ComboBox.ItemsSource>
 					<CompositeCollection>
-						<CollectionContainer 
-							x:Name="newPacksCon" 
-							Collection="{Binding Source={StaticResource newPacks}}" />
-						<CollectionContainer 
-							x:Name="modifiedPacksCon"
-							Collection="{Binding Source={StaticResource modifiedPacks}}" />
-						<CollectionContainer 
-							x:Name="packsCon" 
-							Collection="{Binding Source={StaticResource packs}}" />
-						<CollectionContainer 
-							x:Name="deletedPacksCon" 
-							Collection="{Binding Source={StaticResource deletedPacks}}" />
+						<CollectionContainer Collection="{Binding Source={StaticResource newPacks}}" />
+						<CollectionContainer Collection="{Binding Source={StaticResource modifiedPacks}}" />
+						<CollectionContainer Collection="{Binding Source={StaticResource packs}}" />
+						<CollectionContainer Collection="{Binding Source={StaticResource deletedPacks}}" />
 					</CompositeCollection>
 				</ComboBox.ItemsSource>
 			</ComboBox>
+
 			<Button 
-				Content="Edit Quiz" 
-				Grid.Column="2" 
+				Content="Edit" 
+				Grid.Column="4" 
 				Margin="2" 
 				HorizontalAlignment="Stretch" 
 				HorizontalContentAlignment="Center" 
 				VerticalAlignment="Stretch"
-				Command="{Binding Path=EditQuizViewCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorLevel=1, AncestorType=local:ConfigurationView} }"
+				Command="{Binding EditPackCommand}"
 				/>
-			
 			<Button 
-				Content="Add Question" 
-				Grid.Column="3" 
+				Content="Delete" 
+				Grid.Column="5" 
 				Margin="2" 
 				HorizontalAlignment="Stretch" 
 				HorizontalContentAlignment="Center" 
-				VerticalAlignment="Stretch" 
-				Command="{Binding NewQuestionCommand}"
+				VerticalAlignment="Stretch"
+				Command="{Binding DeletePackCommand }"
 				/>
-
 		</Grid>
 
 		<ListView 
 			Grid.Row="1" 
-			ItemsSource="{Binding Questions, Mode=OneWay}"
+			ItemsSource="{Binding SelectedPack.Questions, Mode=OneWay}"
 			SelectedItem="{Binding SelectedQuestion, Mode=TwoWay}"
 			HorizontalAlignment="Stretch"
+			HorizontalContentAlignment="Stretch"
 			VerticalAlignment="Stretch" 
 			VerticalContentAlignment="Stretch"
-			/>
+			IsEnabled="{Binding IsNotEditingQuiz}"
+			>
+			<ListView.ItemTemplate>
+				<DataTemplate DataType="{x:Type models:Question}">
+					<Grid >
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition />
+							<ColumnDefinition Width="30" />
+						</Grid.ColumnDefinitions>
+						<TextBlock TextWrapping="NoWrap" Text="{Binding Path=QuestionText}" />
+						<TextBlock Text="{Binding Path=Difficulty}" Grid.Column="1" />
+					</Grid>
+				</DataTemplate>
+			</ListView.ItemTemplate>
+		</ListView>
+		
+		
 
 		<local:EditPackView
-			x:Name="PropertiesView"
+			x:Name="QuizPropertiesEdit"
 			Grid.Row="1" 
 			Grid.Column="1" 
 			HorizontalAlignment="Stretch" 
 			VerticalAlignment="Stretch"
-			
-			>
-			<!--Visibility="{IsActive, Converter={StaticResource boolToVisibilityConverter}}"-->
-		</local:EditPackView>
-		<!--<TextBlock Grid.Row="0" Text="{Binding ContentName}" Grid.ColumnSpan="2" Background="White" VerticalAlignment="Top" Padding="10,5" />-->
+			Visibility="{Binding IsEditingQuiz, Converter={StaticResource boolToVisibilityConverter}}"
+			/>
+		<local:QuestionOptionsView
+			Header="Edit Question"
+			x:Name="questionPropertiesView"
+			Grid.Row="1" 
+			Grid.Column="1" 
+			HorizontalAlignment="Stretch" 
+			VerticalAlignment="Stretch"
+			Visibility="{Binding IsViewingQuestion, Converter={StaticResource boolToVisibilityConverter}}"
+			/>
+		
+		<!--<local:PackOptionsView
+			x:Name="QuizPropertiesView"
+			Grid.Row="1" 
+			Grid.Column="1" 
+			HorizontalAlignment="Stretch" 
+			VerticalAlignment="Stretch"
+			DataContext="{Binding SelectedPack}"
+			IsEnabled="False"
+			Visibility="{Binding IsViewingQuiz, Converter={StaticResource boolToVisibilityConverter}}"
+			/>-->
+		
 	</Grid>
 </UserControl>

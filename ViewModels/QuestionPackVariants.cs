@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Runtime.Intrinsics.Arm;
 using System.Xml.Linq;
 
 namespace Labb3_CsProg_ITHS.NET.ViewModels
@@ -38,6 +39,8 @@ namespace Labb3_CsProg_ITHS.NET.ViewModels
 			get => questions;
 			set { }
 		}
+		public override bool CanEditQuestions => false;
+		public override bool StartEditQuestions => false;
 	}
 
 	public class NewQuestionPack : QuestionPackVariant/*, QuestionPackVariant*/
@@ -82,6 +85,8 @@ namespace Labb3_CsProg_ITHS.NET.ViewModels
 			}
 		}
 		public override ObservableCollection<Question> Questions { get; set; }
+		public override bool CanEditQuestions => true;
+		public override bool StartEditQuestions => true;
 	}
 
 	public class ModifiedQuestionPack : QuestionPackVariant/*, QuestionPackVariant*/
@@ -112,16 +117,25 @@ namespace Labb3_CsProg_ITHS.NET.ViewModels
 			//domainPack.Questions.ForEach(q => Questions.Add(new(q)));
 		}
 
-		public override QuestionPack DomainPack { get; protected set; }
+		public override QuestionPack ToDomainPack()
+		{
+			if(!IsChanged) return DomainPack;
+			return new(DomainPack, name, difficulty, timeLimit, questions?.ToList());
+		}
+
+		public bool IsChanged => name != null || difficulty != null || timeLimit != null || questions != null;
+        public override QuestionPack DomainPack { get; protected set; }
 
 		public override string Name
 		{
 			get => name ?? DomainPack.Name;
 			set
 			{
-				name = value;
+				if (value == DomainPack.Name) name = null;
+				else name = value;
+
 				OnPropertyChanged();
-				OnPropertyChanged("IsChanged");
+				OnPropertyChanged(nameof(IsChanged));
 			}
 		}
 		public override Difficulty Difficulty
@@ -129,9 +143,11 @@ namespace Labb3_CsProg_ITHS.NET.ViewModels
 			get => difficulty ?? DomainPack.Difficulty;
 			set
 			{
-				difficulty = value;
+				if(value == DomainPack.Difficulty) difficulty = null;
+				else difficulty = value;
+
 				OnPropertyChanged();
-				OnPropertyChanged("IsChanged");
+				OnPropertyChanged(nameof(IsChanged));
 			}
 		}
 		public override uint TimeLimit
@@ -139,36 +155,51 @@ namespace Labb3_CsProg_ITHS.NET.ViewModels
 			get => timeLimit ?? DomainPack.TimeLimit;
 			set
 			{
-				timeLimit = value;
+				if(value == DomainPack.TimeLimit) timeLimit = null;
+				else timeLimit = value;
 				OnPropertyChanged();
-				OnPropertyChanged("IsChanged");
+				OnPropertyChanged(nameof(IsChanged));
 			}
 		}
+
+		private ObservableCollection<Question>? domainQuestions;
 		public override ObservableCollection<Question> Questions
 		{
-			get
-			{
-				if (questions == null)
-				{
-					questions = new ObservableCollection<Question>();
-					DomainPack.Questions.ForEach(q => questions.Add(new(q)));
-				}
-				return questions;
-			}
+			get => questions ?? (domainQuestions??=new(DomainPack.Questions));
 
 			set
 			{
 				questions = value;
 				OnPropertyChanged();
-				OnPropertyChanged("IsChanged");
+				OnPropertyChanged(nameof(IsChanged));
 			}
 		}
 
+		public override bool CanEditQuestions => questions != null;
+
+		public override bool StartEditQuestions {
+			get
+			{
+				// If this gets evaluated during debug steping by hovering over StartEditQuestions,
+				// it will not work as expected.
+				if(questions == null)
+				{
+					var newQs = new ObservableCollection<Question>();
+					DomainPack.Questions.ForEach(q => newQs.Add(new(q)));
+					Questions = newQs;
+					OnPropertyChanged(nameof(CanEditQuestions));
+					return true;
+				}
+
+				return false;
+			}
+		}
 	}
 
 	public class DeletedQuestionPack : QuestionPackVariant/*, QuestionPackVariant*/
 	{
 		private ObservableCollection<Question>? questions;
+		private QuestionPackVariant? deletedPack;
 
 		public DeletedQuestionPack(QuestionPack domainPack)
 		{
@@ -176,26 +207,35 @@ namespace Labb3_CsProg_ITHS.NET.ViewModels
 		}
 		public DeletedQuestionPack(QuestionPackVariant pack)
 		{
+			deletedPack = pack;
 			DomainPack = pack.DomainPack;
 		}
-
+		public QuestionPackVariant RestorePack()
+		{
+			if(deletedPack == null) return new DomainQuestionPack(DomainPack);
+			return deletedPack;
+		}
 		public override QuestionPack DomainPack { get; protected set; }
 		public override string Name { 
-			get => DomainPack.Name;
+			get => deletedPack?.Name??DomainPack.Name;
 			set { }
 		}
 		public override Difficulty Difficulty { 
-			get => DomainPack.Difficulty;
+			get => deletedPack?.Difficulty??DomainPack.Difficulty;
 			set { }
 		}
 		public override uint TimeLimit { 
-			get => DomainPack.TimeLimit;
+			get => deletedPack?.TimeLimit??DomainPack.TimeLimit;
 			set { }
 		}
 		public override ObservableCollection<Question> Questions { 
-			get => questions??=new(DomainPack.Questions);
+			get => deletedPack?.Questions??(questions??=new(DomainPack.Questions));
 			set { }
 		}
+
+		public override bool CanEditQuestions => false;
+		public override bool StartEditQuestions => false;
+
 	}
 
 	// Had to create both an abstract class and an interface because neither could implement everything I needed.
@@ -208,11 +248,31 @@ namespace Labb3_CsProg_ITHS.NET.ViewModels
 		public abstract uint TimeLimit { get; set; }
 		public abstract ObservableCollection<Question> Questions { get; set; }
 
-		public event PropertyChangedEventHandler? PropertyChanged;
+        public abstract bool CanEditQuestions { get; }
+		public abstract bool StartEditQuestions { get; }
+
+		public virtual QuestionPack ToDomainPack()
+		{
+			return new(DomainPack, Name, Difficulty, TimeLimit, Questions.ToList());
+		}
+
+		private PropertyChangedEventHandler? _propertyChanged;
+
+		public event PropertyChangedEventHandler? PropertyChanged
+		{
+			add
+			{
+				_propertyChanged += value;
+			}
+			remove
+			{
+				_propertyChanged -= value;
+			}
+		}
 
 		protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
 		{
-			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+			_propertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 		}
 	}
 	//public interface IModifiablePackVariant

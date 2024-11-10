@@ -1,142 +1,165 @@
 ﻿using Labb3_CsProg_ITHS.NET.Models;
 using System.IO.Packaging;
+using System.Runtime.CompilerServices;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Media;
 
 namespace Labb3_CsProg_ITHS.NET.ViewModels
 {
-	internal class ConfigurePackViewModel : ViewModelBase
-    {
-		//private string _name = string.Empty;
-		//private Difficulty _difficulty = Difficulty.Easy;
-		//private uint _timeLimit = 10;
-		private bool _isNameValid = false;
+	public class ConfigurePackViewModel : ViewModelBase
+	{
+		private string _name;// = string.Empty;
+		private Difficulty _difficulty;// = Difficulty.Easy;
+		private uint _timeLimit;// = 10;
+		//private bool _isNameValid;// = false;
 
-		//private QuestionPack? _original;
-        //public NewQuestionPack? NewPack { get; set; }
-        public QuestionPackVariant Pack { 
-			get; 
-			set; }
-		public bool IsChanged
+		private Action? _onChanged;
+
+		private void OnFirstChange()
 		{
-			get
-			{
-				return
-					Pack.Name            != Pack.DomainPack.Name ||
-					Pack.Difficulty      != Pack.DomainPack.Difficulty ||
-					Pack.TimeLimit       != Pack.DomainPack.TimeLimit ||
-					Pack.Questions.Count != Pack.DomainPack.Questions.Count;
-			}
+			IsChanged = true;
+			CancelCommand?.RaiseCanExecuteChanged();
+			_onChanged = null;
 		}
-		//public string Name
-		//{
-		//	get => Pack.Name;
-		//	set
-		//	{
-		//		Pack.Name = value;
-		//		OnPropertyChanged();
-		//		//IsNameValid = !string.IsNullOrWhiteSpace(value);
-		//		SaveCommand.RaiseCanExecuteChanged();
-		//	}
-		//}
-        //internal Difficulty Difficulty { get; }
-  //      public double DifficultyDouble
-		//{
-		//	get => (double)Pack.Difficulty;
-		//	set
-		//	{
-		//		Pack.Difficulty = (Difficulty)value;
-		//		OnPropertyChanged();
-		//		OnPropertyChanged("DifficultyName");
-		//	}
-		//}
-		public string DifficultyName => Pack.Difficulty.ToString();
+		private void OnChange([CallerMemberName] string? name = null)
+		{
+			OnPropertyChanged(name);
+			_onChanged?.Invoke();
+			SaveCommand?.RaiseCanExecuteChanged();
+		}
 
-		//public string? TimeLimit
-		//{
-		//	get => Pack.TimeLimit.ToString();
-		//	set
-		//	{
-		//		if(!uint.TryParse(value, out var timeLimit))
-		//		{
-		//			//timeLimit = Pack.TimeLimit;
-		//			Pack.OnPropertyChanged();
-		//			return;
-		//		}
-		//		Pack.TimeLimit = timeLimit;
-		//		//_timeLimit = value!=null? uint.Parse(value) : 0;
-		//		//SaveCommand?.RaiseCanExecuteChanged();
-		//		//OnPropertyChanged();
-		//	}
-		//}
-		
-		public bool IsNameValid => !string.IsNullOrWhiteSpace(Pack.Name);
+		private void SaveChanges()
+		{
+			Pack.Name = Name;
+			Pack.Difficulty = Difficulty;
+			Pack.TimeLimit = TimeLimit;
+			IsChanged = false;
+			CloseCommand?.Execute(null);
+		}
 
-		public RelayCommand? SaveCommand { get; }
-		public RelayCommand? CancelCommand { get; }
-
+		/// <summary>
+		/// Dialog form
+		/// </summary>
 		public ConfigurePackViewModel(RelayCommand createCommand, RelayCommand cancelCommand)
 		{
-			Pack = new NewQuestionPack(string.Empty, Difficulty.Easy, 10);
-			SaveCommand = createCommand;
-			SaveCommand.SetCanExecute(_ => IsNameValid && Pack.TimeLimit > 0);
-			Pack.PropertyChanged += Pack_PropertyChanged;
+			IsChanged = true;
+			_name = string.Empty;
+			_difficulty = Difficulty.Easy;
+			_timeLimit = 10;
+
+			Pack = new NewQuestionPack(_name, _difficulty, _timeLimit);
+			SaveCommand = new RelayCommand(
+				_ => {
+					SaveChanges();
+					createCommand.Execute(Pack); }, 
+				_ => IsNameValid && _timeLimit > 0);
 			CancelCommand = cancelCommand;
+
+			//Pack.PropertyChanged += Pack_PropertyChanged;
 		}
 
-        public ConfigurePackViewModel(QuestionPackVariant pack, RelayCommand cancelCommand)
+		/// <summary>
+		/// Edit form
+		/// </summary>
+		public ConfigurePackViewModel(QuestionPackVariant pack, RelayCommand closeCommand)
 		{
 			Pack = pack;
-			CancelCommand = cancelCommand;
+			Name = pack.Name;
+			Difficulty = pack.Difficulty;
+			TimeLimit = pack.TimeLimit;
+
+			_onChanged = OnFirstChange;
+			CancelCommand = closeCommand;
 			//CancelCommand.SetCanExecute(_ => IsChanged);
+			SaveCommand = new RelayCommand(
+				_ => SaveChanges(), 
+				_ => IsNameValid && _timeLimit > 0);
+			CloseCommand = closeCommand;
 		}
 
-		private void Pack_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+		public QuestionPackVariant Pack { get; set; }
+
+		public bool IsChanged { get; private set; } = false;
+			//{
+			//	return
+			//		_name            != Pack.Name ||
+			//		_difficulty      != Pack.Difficulty ||
+			//		_timeLimit       != Pack.TimeLimit;
+			//}
+		public string Name
 		{
-			switch(e.PropertyName)
+			get => _name;
+			set
 			{
-				case "Difficulty":
-					OnPropertyChanged(nameof(DifficultyName));
-					OnPropertyChanged(nameof(IsChanged));
-					break;
+				_name = value;
+				OnChange();
+			}
+		}
+		public Difficulty Difficulty
+		{
+			get => _difficulty;
+			set
+			{
+				_difficulty = value;
+				OnChange();
+				OnPropertyChanged(nameof(DifficultyName));
+			}
+		}
+		public string DifficultyName => _difficulty.ToString();
 
-				case "Name":
-				case "TimeLimit":
-					SaveCommand?.RaiseCanExecuteChanged();
-					OnPropertyChanged(nameof(IsChanged));
-					break;
-
-				default:
-
-					break;
+		public uint TimeLimit
+		{
+			get => _timeLimit;
+			set
+			{
+				_timeLimit = value;
+				OnChange();
 			}
 		}
 
-		//private void ResetChanges()
+		public bool IsNameValid => !string.IsNullOrWhiteSpace(_name);
+
+		public RelayCommand? SaveCommand { get; }
+		public RelayCommand CancelCommand { get; }
+		public RelayCommand? CloseCommand { get; }
+
+		public double Minimum => _diffSliderValues[0];
+        public double Maximum => _diffSliderValues[^1];
+
+		static ConfigurePackViewModel()
+		{
+			DoubleCollection diffSliderVals = new();
+			foreach(var item in Enum.GetValues<Difficulty>())
+			{
+				diffSliderVals.Add((double)item);
+			}
+			_diffSliderValues = diffSliderVals;
+		}
+		private static readonly DoubleCollection _diffSliderValues;
+		public DoubleCollection DiffSliderValues => _diffSliderValues;
+
+
+		//private void Pack_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
 		//{
-			//Name = _original!.Name;
-			//DifficultyDouble = (double)_original.Difficulty;
-			//TimeLimit = _original.TimeLimit.ToString();
+		//	switch(e.PropertyName)
+		//	{
+		//		case "Difficulty":
+		//			OnPropertyChanged(nameof(DifficultyName));
+		//			OnPropertyChanged(nameof(IsChanged));
+		//			break;
+
+		//		case "Name":
+		//		case "TimeLimit":
+		//			SaveCommand?.RaiseCanExecuteChanged();
+		//			OnPropertyChanged(nameof(IsChanged));
+		//			break;
+
+		//		default:
+
+		//			break;
+		//	}
 		//}
 
-		public DoubleCollection DiffSliderValues
-		{
-			get
-			{
-				DoubleCollection result = new();
-				foreach (var item in Enum.GetValues<Difficulty>())
-				{
-					result.Add((double)item);
-				}
-				Minimum = result[0];
-				Maximum = result[^1];
-				return result;
-			}
-		}
-
-        public double Minimum { get; private set; }
-        public double Maximum { get; private set; }
 	}
 
 	public class TimeValidationRule : ValidationRule
@@ -154,54 +177,6 @@ namespace Labb3_CsProg_ITHS.NET.ViewModels
 				}
 			}
 			return new ValidationResult(false, "Time limit must be a positive number");
-		}
-	}
-
-	[ValueConversion(typeof(uint), typeof(string))]
-	public class TimeStringConverter : IValueConverter
-	{
-		public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-		{
-			if(value is uint time)
-			{
-				return time.ToString();
-			}
-			return string.Empty;
-		}
-
-		public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-		{
-			if(value is string str)
-			{
-				if(uint.TryParse(str, out uint result))
-				{
-					return result;
-				}
-			}
-			return 0;
-		}
-	}
-
-	[ValueConversion(typeof(Difficulty), typeof(double))]
-
-	public class DifficultyConverter : IValueConverter
-	{
-		public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-		{
-			if(value is Difficulty diff)
-			{
-				return (double)diff;
-			}
-			return 0.0;
-		}
-
-		public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-		{
-			if(value is double dbl)
-			{
-				return (Difficulty)dbl;
-			}
-			return Difficulty.Easy;
 		}
 	}
 }

@@ -21,6 +21,9 @@ public partial class CreatePackDialog : Window
 		var cancelCommand = new RelayCommand(_ => DialogResult = false);
 		DataContext = new ConfigurePackViewModel(newCreateCommand, cancelCommand);
 
+		Closing += (_, _) => DataContext = null;
+
 		InitializeComponent();
 	}
+
 }

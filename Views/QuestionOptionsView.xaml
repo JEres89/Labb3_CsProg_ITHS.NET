@@ -1,0 +1,187 @@
+﻿<UserControl 
+	x:Class="Labb3_CsProg_ITHS.NET.Views.QuestionOptionsView"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:converters="clr-namespace:Labb3_CsProg_ITHS.NET.Converters"
+	xmlns:local="clr-namespace:Labb3_CsProg_ITHS.NET.Views"
+	xmlns:viewmodels="clr-namespace:Labb3_CsProg_ITHS.NET.ViewModels"
+	xmlns:dialogs="clr-namespace:Labb3_CsProg_ITHS.NET.Dialogs"
+	
+	mc:Ignorable="d"
+	d:DataContext="{d:DesignInstance Type=viewmodels:ConfigurationViewModel}"
+	d:DesignHeight="400" d:DesignWidth="400"
+>
+	<UserControl.Resources>
+		<converters:TextboxLabelConverter x:Key="textboxLabelConverter" />
+	</UserControl.Resources>
+	<Grid IsEnabled="{Binding Path=SelectedPack.CanEditQuestions}" Margin="20,0" MaxWidth="300">
+		<Grid.RowDefinitions>
+			<RowDefinition Height="*"/>
+			<RowDefinition Height="*"/>
+			<RowDefinition Height="2*"/>
+			<RowDefinition Height="3*"/>
+		</Grid.RowDefinitions>
+
+		<TextBlock x:Name="HeaderBlock" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20" />
+
+		<StackPanel Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Center">
+			<Label Content="_Category:" FontSize="14"/>
+			<TextBox Text="{Binding Path=SelectedQuestion.Category, UpdateSourceTrigger=LostFocus}" FontSize="14" VerticalContentAlignment="Center" VerticalAlignment="Center" />
+		</StackPanel>
+
+		<StackPanel Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Center" >
+			<Label Content="Question _Text" FontSize="14"/>
+			<TextBox TextWrapping="Wrap" MaxLines="3" FontSize="12" Height="50" Text="{Binding Path=SelectedQuestion.QuestionText, UpdateSourceTrigger=LostFocus}"></TextBox>
+		</StackPanel>
+
+		<Grid Grid.Row="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" >
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="*"/>
+				<ColumnDefinition Width="*"/>
+			</Grid.ColumnDefinitions>
+			<Grid.RowDefinitions>
+				<RowDefinition Height="Auto"/>
+				<RowDefinition Height="Auto"/>
+				<RowDefinition Height="Auto"/>
+				<RowDefinition Height="Auto"/>
+			</Grid.RowDefinitions>
+			<Label 
+				HorizontalAlignment="Left" 
+				VerticalAlignment="Center" 
+				FontSize="14"
+				Background="Transparent"
+				Content="Correct answer:"
+				/>
+			<TextBox
+				Grid.Column="1"
+				HorizontalAlignment="Stretch"
+				VerticalAlignment="Center" 
+				FontSize="14" 
+				Text="{Binding SelectedQuestion.CorrectAnswer}" 
+				/>
+			
+			<Label 
+				Grid.Row="1"
+				HorizontalAlignment="Left" 
+				VerticalAlignment="Center" 
+				FontSize="14"
+				Background="Transparent"
+				Content="Incorrect answer 1:"
+				/>
+			<TextBox
+				Grid.Row="1"
+				Grid.Column="1"
+				HorizontalAlignment="Stretch"
+				VerticalAlignment="Center" 
+				FontSize="14" 
+                Text="{Binding SelectedQuestion.IncorrectAnswerOne}" 
+                />
+
+			<Label 
+				Grid.Row="2"
+				HorizontalAlignment="Left" 
+				VerticalAlignment="Center" 
+				FontSize="14"
+				Background="Transparent"
+				Content="Incorrect answer 2:"
+				/>
+			<TextBox
+				Grid.Row="2"
+				Grid.Column="1"
+				HorizontalAlignment="Stretch"
+				VerticalAlignment="Center" 
+				FontSize="14" 
+                Text="{Binding SelectedQuestion.IncorrectAnswerTwo}" 
+                />
+
+			<Label 
+				Grid.Row="3"
+				HorizontalAlignment="Left" 
+				VerticalAlignment="Center" 
+				FontSize="14"
+				Background="Transparent"
+				Content="Incorrect answer 3:"
+				/>
+			<TextBox
+				Grid.Row="3"
+				Grid.Column="1"
+				HorizontalAlignment="Stretch"
+				VerticalAlignment="Center" 
+				FontSize="14" 
+                Text="{Binding SelectedQuestion.IncorrectAnswerThree}" 
+                />
+		</Grid>
+		<!--<Grid Grid.Row="4" HorizontalAlignment="Center" VerticalAlignment="Center">-->
+
+			<!--<ItemsControl IsEnabled="{Binding Source=SelectedPack, Path=CanEditQuestions}" ItemsSource="{Binding Path=SelectedQuestion.IncorrectAnswers, Mode=TwoWay}">
+				<ItemsControl.ItemTemplate>
+					<DataTemplate>
+						<Grid>
+							<Label
+								HorizontalAlignment="Left" 
+								VerticalAlignment="Center" 
+								FontSize="14"
+								Background="Transparent" 
+								Opacity="0.5" 
+								IsHitTestVisible="False"
+								Content="Incorrect answer..." 
+								Visibility="{Binding Path=., Converter={StaticResource textboxLabelConverter}}"
+								/>
+							<TextBox
+								
+								HorizontalAlignment="Stretch" 
+								VerticalAlignment="Top" 
+								FontSize="14" 
+								Text="{Binding Path=., Mode=TwoWay, UpdateSourceTrigger=LostFocus}" 
+								/>
+						</Grid>
+					</DataTemplate>
+				</ItemsControl.ItemTemplate>
+				<ItemsControl.ItemsPanel>
+					<ItemsPanelTemplate>
+						<WrapPanel/>
+					</ItemsPanelTemplate>
+				</ItemsControl.ItemsPanel>
+			</ItemsControl>-->
+		<!--</Grid>-->
+		<!--<StackPanel Grid.Row="3" HorizontalAlignment="Center" VerticalAlignment="Center" Width="150">
+			<Grid>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="8*"/>
+					<ColumnDefinition Width="3*"/>
+				</Grid.ColumnDefinitions>
+				<Label 
+                    Grid.Column="0" 
+                    HorizontalAlignment="Left" 
+                    VerticalAlignment="Center" 
+                    Content="_Time Limit (s):" 
+                    FontSize="16"
+                    />
+				<TextBox 
+                    Grid.Column="1" 
+                    HorizontalAlignment="Stretch" 
+                    HorizontalContentAlignment="Right" 
+                    VerticalAlignment="Center" 
+                    FontSize="16"
+					>
+					<TextBox.Text>
+						<Binding 
+							
+                            Path="TimeLimit" 
+							Converter="{StaticResource timeStringConverter}"
+                            Mode="TwoWay" 
+                            UpdateSourceTrigger="PropertyChanged"
+							>
+							<Binding.ValidationRules>
+								<viewmodels:TimeValidationRule ValidatesOnTargetUpdated="False" />
+							</Binding.ValidationRules>
+						</Binding>
+					</TextBox.Text>
+				</TextBox>
+			</Grid>
+		</StackPanel>-->
+	</Grid>
+</UserControl>
+

@@ -1,6 +1,7 @@
 ﻿using Labb3_CsProg_ITHS.NET.Dialogs;
 using Labb3_CsProg_ITHS.NET.Models;
 using System.Collections.ObjectModel;
+using System.Runtime.Intrinsics.Arm;
 using System.Windows.Media;
 
 namespace Labb3_CsProg_ITHS.NET.ViewModels;
@@ -8,25 +9,55 @@ namespace Labb3_CsProg_ITHS.NET.ViewModels;
 /// <summary>
 /// Coded as if the <see cref="QuestionPack"/>s are stored in a database or other domain model. Therefore I do not make all edits directly to those objects, only when explicitly saving changes.
 /// </summary>
-internal class ConfigurationViewModel : ViewModelBase
+public class ConfigurationViewModel : ViewModelBase
 {
 	private Question? _selectedQuestion;
 	private QuestionPackVariant? _selectedPack;
+	private ConfigurePackViewModel? _configurePackViewModel;
 
-	public ObservableCollection<DomainQuestionPack> Packs { get; private set; } = new();
+    public MainWindowsViewModel MainViewModel { get; private set; }
+
+    public ObservableCollection<DomainQuestionPack> Packs { get; private set; } = new();
 	public ObservableCollection<NewQuestionPack> NewPacks { get; private set; } = new();
 	public ObservableCollection<ModifiedQuestionPack> ModifiedPacks { get; private set; } = new();
 	public ObservableCollection<DeletedQuestionPack> DeletedPacks { get; private set; } = new();
 
+    public bool IsNotEditingQuiz => ConfigurePackViewModel == null;
+    public bool IsEditingQuiz => ConfigurePackViewModel != null;
+    //public bool IsViewingQuiz => IsNotEditingQuiz && SelectedPack != null && SelectedQuestion == null;
+    public bool IsViewingQuestion => ConfigurePackViewModel == null && SelectedQuestion != null;
+    //public bool IsEditingQuestion => ConfigurePackViewModel != null;
+
+    public ConfigurePackViewModel? ConfigurePackViewModel
+	{
+		get => _configurePackViewModel;
+		set
+		{
+			_configurePackViewModel = value;
+			OnPropertyChanged();
+			OnPropertyChanged(nameof(IsNotEditingQuiz));
+			OnPropertyChanged(nameof(IsEditingQuiz));
+			//OnPropertyChanged(nameof(IsViewingQuiz));
+			OnPropertyChanged(nameof(IsViewingQuestion));
+			CanExecutePackChanged.Invoke();
+			CanExecuteQuestionChanged.Invoke();
+		}
+	}
 	public QuestionPackVariant? SelectedPack
 	{
 		get => _selectedPack;
 		set
 		{
-			_selectedPack = value; 
+			if(ConfigurePackViewModel != null)
+			{
+				OnPropertyChanged();
+				return;
+			}
+			_selectedPack = value;
 			SelectedQuestion = null;
 			OnPropertyChanged();
 			OnPropertyChanged(nameof(Questions));
+			//OnPropertyChanged(nameof(IsViewingQuiz));
 			CanExecutePackChanged.Invoke();
 		}
 	}
@@ -38,97 +69,227 @@ internal class ConfigurationViewModel : ViewModelBase
 		get => _selectedQuestion;
 		set
 		{
+			if(ConfigurePackViewModel != null)
+			{
+				OnPropertyChanged();
+				return;
+			}
 			_selectedQuestion = value;
 			OnPropertyChanged();
+			//OnPropertyChanged(nameof(IsViewingQuiz));
+			OnPropertyChanged(nameof(IsViewingQuestion));
 			CanExecuteQuestionChanged.Invoke();
 		}
 	}
 
+
+	public RelayCommand SaveChangesCommand { get; }
+
+	public RelayCommand? NewQuiz_ViewCommand { get; set; }
+	//public RelayCommand? EditQuiz_ViewCommand { get; set; }
+	public RelayCommand? NewQuestion_ViewCommand { get; set; }
+
 	public RelayCommand NewPackCommand { get; }
-	/// <summary>
-	/// Use when changing the name, difficulty, or time limit of a pack.
-	/// </summary>
+    public RelayCommand ClosePackEditCommand { get; }
 	public RelayCommand EditPackCommand { get; }
     public RelayCommand DeletePackCommand { get; }
     public RelayCommand UndoPackChangesCommand { get; }
 
 	public RelayCommand NewQuestionCommand { get; }
-	public RelayCommand EditQuestionCommand { get; }
+	public RelayCommand EditQuestionsCommand { get; }
 	public RelayCommand DeleteQuestionCommand { get; }
 
 	private event Action CanExecutePackChanged;
 	private event Action CanExecuteQuestionChanged;
 
-	public ConfigurationViewModel()
+	public ConfigurationViewModel(MainWindowsViewModel mainVM)
     {
-        NewPackCommand = new(
-			pack => CreatePack(pack));
-		//CanExecutePackChanged += NewPackCommand.RaiseCanExecuteChanged;
+
+		MainViewModel = mainVM;
+
+		SaveChangesCommand = new(
+			pack => {
+				ConfigurePackViewModel?.SaveCommand?.Execute(null);
+				SaveToDomain(pack);
+			},
+			_ => NewPacks.Count > 0 || ModifiedPacks.Count > 0 || DeletedPacks.Count > 0);
+
+		NewPackCommand = new(
+			pack => CreatePack(pack),
+			_ => ConfigurePackViewModel != null);
+
+
+		ClosePackEditCommand = new(
+			_ => ConfigurePackViewModel = null);
+		CanExecutePackChanged += ClosePackEditCommand.RaiseCanExecuteChanged;
+		CanExecuteQuestionChanged += ClosePackEditCommand.RaiseCanExecuteChanged;
+
 
 		EditPackCommand = new(
-			_ => EditPack(), 
-			_ => SelectedPack is not null);
+			_ => { 
+				EditPack();
+				SelectedQuestion = null;
+				ConfigurePackViewModel = new(SelectedPack!, ClosePackEditCommand);
+			}, 
+			_ => { return 
+				ConfigurePackViewModel is null && 
+				SelectedPack is not null;
+			});
 		CanExecutePackChanged += EditPackCommand.RaiseCanExecuteChanged;
+
 
 		DeletePackCommand = new(
 			_ => DeletePack(), 
-			_ => SelectedPack is not null or DeletedQuestionPack);
+			_ => { return
+				ConfigurePackViewModel is null &&
+				SelectedPack is not null or DeletedQuestionPack;
+			});
 		CanExecutePackChanged += DeletePackCommand.RaiseCanExecuteChanged;
+
+
+		EditQuestionsCommand = new(
+			_ => EditQuestions(),
+			_ => { return
+				ConfigurePackViewModel is null && 
+				SelectedPack is not null && 
+				!SelectedPack.CanEditQuestions;
+			});
+		CanExecutePackChanged += EditQuestionsCommand.RaiseCanExecuteChanged;
+
 
 		UndoPackChangesCommand = new(
 			_ => UndoPackChanges(),
-			_ => SelectedPack is ModifiedQuestionPack or DeletedQuestionPack);
+			_ => { return
+				SelectedPack is DeletedQuestionPack ||
+				(SelectedPack is ModifiedQuestionPack qp && qp.IsChanged);
+			});
+		CanExecutePackChanged += UndoPackChangesCommand.RaiseCanExecuteChanged;
+		CanExecuteQuestionChanged += UndoPackChangesCommand.RaiseCanExecuteChanged;
+		
 
 		NewQuestionCommand = new(
 			question => CreateQuestion(question), 
-			_ => SelectedPack is not null);
+			_ => { return
+				ConfigurePackViewModel is null && 
+				SelectedPack is not null && 
+				SelectedPack.CanEditQuestions;
+			});
+		NewQuestionCommand.CanExecuteChanged += (_, _) => NewQuestion_ViewCommand?.RaiseCanExecuteChanged();
 		CanExecutePackChanged += NewQuestionCommand.RaiseCanExecuteChanged;
 
-		EditQuestionCommand = new(
-			_ => EditQuestion(),
-			_ => SelectedQuestion is not null);
-		CanExecuteQuestionChanged += EditQuestionCommand.RaiseCanExecuteChanged;
 
 		DeleteQuestionCommand = new(
 			_ => DeleteQuestion(), 
-			_ => SelectedQuestion is not null);
+			_ => { return 
+				ConfigurePackViewModel is null && 
+				SelectedQuestion is not null && 
+				(SelectedPack?.CanEditQuestions??false);
+			});
 		CanExecuteQuestionChanged += DeleteQuestionCommand.RaiseCanExecuteChanged;
 
+		if(DomainModel.Load())
+		{
+			foreach(var pack in DomainModel.QuestionPacks.Values)
+			{
+				Packs.Add(new(pack));
+			}
+		}
+	}
 #if DEBUG
-		for(uint i = 0; i < 6; i++)
-		{
-			Packs.Add(
-				new(new QuestionPack($"Question Pack {i}", (Difficulty)(i%3), 5*i, MockQuestions())));
-		}
+	//	//for(uint i = 0; i < 3; i++)
+	//	//{
+	//	//	Packs.Add(new(new QuestionPack($"Question Pack {i}", (Difficulty)(i%3), 5*(i+1), MockQuestions(i))));
+	//	//}
+	//	for(uint i = 0; i < 6; i++)
+	//	{
+	//		NewPacks.Add(new(name: $"Question Pack {i}", (Difficulty)(i%3), 5*(i+1), new(MockQuestions(i))));
+	//	}
+	//}
 
-	}
+	//private static int questionNum = 0;
 
-	private static int questionNum = 0;
-	private static List<Question> MockQuestions()
-	{
-		var questions = new List<Question>();
-		for(int i = questionNum; i < questionNum + 3; i++)
-		{
-			questions.Add(new Question($"Question {i}", "Answer", new[] { "Wrong", "Wrong", "Wrong" }));
-		}
-		questionNum += 3;
-		return questions;
-	}
+	//private static List<Question> MockQuestions(uint q)
+	//{
+	//	var questions = new List<Question>();
+	//	for(int i = questionNum; i < questionNum + 3; i++)
+	//	{
+	//		questions.Add(new Question($"Question {q}:{i}", "Answer", "Wrong", "Wrong", "Wrong" ));
+	//	}
+	//	questionNum += 3;
+	//	return questions;
+	//}
 #else
-	}
+	//}
 #endif
 
-	//private void SelectPack(QuestionPack pack)
-	//{
-	//	if(SelectedPack != null && !Packs.Contains(SelectedPack))
-	//	{
-	//		SelectedPack.Questions = new(Questions!);
-	//	}
+	private void SaveToDomain(object? pack = null)
+	{
+		SelectedPack = null;
+		if(pack is not QuestionPackVariant questionPack)
+		{
+			foreach(var modified in ModifiedPacks)
+			{
+				Packs.Add(new(DomainModel.EditQuestionPack(modified.ToDomainPack())));
+			}
+			ModifiedPacks.Clear();
 
-	//	SelectedPack = pack;
-	//	SelectedQuestion = null;
-	//	Questions = new(pack.Questions);
-	//}
+			foreach(var deleted in DeletedPacks)
+			{
+				DomainModel.DeleteQuestionPack(deleted.ID);
+			}
+			DeletedPacks.Clear();
+
+			foreach(var newPack in NewPacks)
+			{
+				Packs.Add(new(DomainModel.AddQuestionPack(newPack.ToDomainPack())));
+			}
+			NewPacks.Clear();
+		}
+		else
+		{
+			switch(questionPack)
+			{
+				case NewQuestionPack newPack:
+					Packs.Add(new(DomainModel.AddQuestionPack(newPack.ToDomainPack())));
+					NewPacks.Remove(newPack);
+					break;
+
+				case ModifiedQuestionPack modifiedPack:
+					Packs.Add(new(DomainModel.EditQuestionPack(modifiedPack.ToDomainPack())));
+					ModifiedPacks.Remove(modifiedPack);
+					break;
+
+				case DeletedQuestionPack deletedPack:
+					DomainModel.DeleteQuestionPack(deletedPack.ID);
+					DeletedPacks.Remove(deletedPack);
+					break;
+
+				default:
+					break;
+			}
+		}
+		DomainModel.Apply();
+	}
+
+	private void AddPack(QuestionPackVariant pack)
+	{
+		switch(pack)
+		{
+			case DomainQuestionPack domainPack:
+				Packs.Add(domainPack);
+				break;
+			case NewQuestionPack newPack:
+				NewPacks.Add(newPack);
+				break;
+
+			case ModifiedQuestionPack modifiedPack:
+				ModifiedPacks.Add(modifiedPack);
+				break;
+			default:
+				break;
+		}
+		SelectedPack = pack;
+	}
 
 	private void CreatePack(object? packModel)
 	{
@@ -149,15 +310,11 @@ internal class ConfigurationViewModel : ViewModelBase
 		{
 			case NewQuestionPack newPack:
 			case ModifiedQuestionPack modifiedPack:
-				SelectedQuestion = null;
-				break;
+				return;
 
 			case DeletedQuestionPack deletedPack:
-				DeletedPacks.Remove(deletedPack); 
-				var restoredPack = new ModifiedQuestionPack(deletedPack.DomainPack);
-				ModifiedPacks.Add(restoredPack);
-				SelectedPack = restoredPack;
-				SelectedQuestion = null;
+				RestoreDeletedPack(deletedPack);
+				EditPack();
 				break;
 
 			case DomainQuestionPack domainPack:
@@ -167,6 +324,7 @@ internal class ConfigurationViewModel : ViewModelBase
 			default:
 				break;
 		}
+		CanExecutePackChanged?.Invoke();
 	}
 
 	private void DeletePack()
@@ -183,7 +341,7 @@ internal class ConfigurationViewModel : ViewModelBase
 
 			case ModifiedQuestionPack modifiedPack:
 				ModifiedPacks.Remove(modifiedPack);
-				Packs.Add(new(modifiedPack));
+				DeletedPacks.Add(new DeletedQuestionPack(modifiedPack));
 				SelectedPack = null;
 				break;
 
@@ -197,20 +355,37 @@ internal class ConfigurationViewModel : ViewModelBase
 				break;
 		}
 	}
+	private void RestoreDeletedPack(DeletedQuestionPack? deletedPack)
+	{
+		if(deletedPack == null)
+		{
+			if(SelectedPack is not DeletedQuestionPack selected) return;
+			else deletedPack = selected;
+		}
+
+		DeletedPacks.Remove(deletedPack);
+		var restoredPack = deletedPack.RestorePack();
+		AddPack(restoredPack);
+		SelectedPack = restoredPack;
+		SelectedQuestion = null;
+	}
 	private void UndoPackChanges()
 	{
+		if(ConfigurePackViewModel is not null)
+		{
+			ConfigurePackViewModel!.CancelCommand.Execute(null);
+		}
 		switch(SelectedPack)
 		{
 			case ModifiedQuestionPack modifiedPack:
 				ModifiedPacks.Remove(modifiedPack);
-				Packs.Add(new(modifiedPack));
-				SelectedPack = modifiedPack;
+				DomainQuestionPack domainPack = new(modifiedPack);
+				Packs.Add(domainPack);
+				SelectedPack = domainPack;
 				break;
 
 			case DeletedQuestionPack deletedPack:
-				DeletedPacks.Remove(deletedPack);
-				Packs.Add(new(deletedPack));
-				SelectedPack = deletedPack;
+				RestoreDeletedPack(deletedPack);
 				break;
 
 			default:
@@ -222,29 +397,37 @@ internal class ConfigurationViewModel : ViewModelBase
 	{
         if(packToModify == null) return;
 
-		Packs.Remove(packToModify);
 		var modifiedPack = new ModifiedQuestionPack(packToModify);
 		ModifiedPacks.Add(modifiedPack);
 		SelectedPack = modifiedPack;
+		Packs.Remove(packToModify);
 		SelectedQuestion = null;
 	}
 
-	private void StartModifyQuestion()
+	/// <summary>
+	/// Unlocks editing of the selected question.
+	/// </summary>
+	/// <param name="questionModel"></param>
+	private void EditQuestions()
 	{
-		if(SelectedPack == null || SelectedQuestion == null) return;
-		if(SelectedPack is ModifiedQuestionPack or NewQuestionPack) return;
 
-		int index = Questions!.IndexOf(SelectedQuestion);
+		if(SelectedPack == null) return;
+		int index = SelectedQuestion == null ? -1 : Questions!.IndexOf(SelectedQuestion);
 
 		EditPack();
 
-		SelectedQuestion = Questions[index];
+		if(SelectedPack.StartEditQuestions){
+			SelectedQuestion = index < 0 ? null : Questions[index];
+			CanExecutePackChanged?.Invoke();
+			//OnPropertyChanged(nameof(Questions));
+			return;
+		}
+		else
+		{
+			SelectedQuestion = index < 0 ? null : Questions[index];
+			CanExecutePackChanged?.Invoke();
+		}
 	}
-
-	//private void SelectQuestion(Question question)
-	//{
-	//	SelectedQuestion = question;
-	//}
 
 	/// <summary>
 	/// Adds a newly created question to the selected packs questions.
@@ -252,23 +435,12 @@ internal class ConfigurationViewModel : ViewModelBase
 	/// <param name="questionModel"></param>
 	private void CreateQuestion(object? questionModel)
     {
-		if (questionModel is not Question question) return;
-		EditPack();
+		if (questionModel is not Question question || (!SelectedPack?.CanEditQuestions??false)) return;
 
 		Questions!.Add(question);
 		SelectedQuestion = question;
 	}
 
-	/// <summary>
-	/// Unlocks editing of the selected question.
-	/// </summary>s
-	/// <param name="questionModel"></param>
-	private void EditQuestion()
-	{
-		if (SelectedQuestion == null) return;
-
-		StartModifyQuestion();
-	}
 
 	//private void AddQuestion(object? questionModel)
 	//{
@@ -277,13 +449,12 @@ internal class ConfigurationViewModel : ViewModelBase
 
 	//	Questions!.Add(question);
 	//	SelectedQuestion = question;
-	//	StartModifyQuestion();
+	//	StartModifyQuestions();
 	//}
 
 	private void DeleteQuestion()
 	{
-		if (SelectedQuestion == null) return;
-		StartModifyQuestion();
+		if (SelectedQuestion == null || (!SelectedPack?.CanEditQuestions??false)) return;
 
 		Questions!.Remove(SelectedQuestion!);
 		SelectedQuestion = null;

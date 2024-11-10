@@ -6,18 +6,15 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:Labb3_CsProg_ITHS.NET.Views"
     xmlns:viewmodels="clr-namespace:Labb3_CsProg_ITHS.NET.ViewModels" 
-    mc:Ignorable="d"
-    d:DataContext="{d:DesignInstance Type=viewmodels:ConfigurePackViewModel}" 
-    d:DesignHeight="400" d:DesignWidth="400" d:Background="White"
 	
+    mc:Ignorable="d"
+    d:DataContext="{d:DesignInstance Type=viewmodels:ConfigurationViewModel}" 
+    d:DesignHeight="400" d:DesignWidth="400" d:Background="White"
 	>
-	<UserControl.Resources>
-		<BooleanToVisibilityConverter x:Key="boolToVisibilityConverter"/>
-	</UserControl.Resources>
 	<Grid>
 		<Grid.RowDefinitions>
 			<RowDefinition Height="7*"/>
-			<RowDefinition Height="*"/>
+			<RowDefinition Height="2*"/>
 		</Grid.RowDefinitions>
 
 		<local:PackOptionsView Grid.Row="0" Header="Edit Quiz settings"/>
@@ -28,16 +25,14 @@
 				Width="70"
 				Content="Save"
 				FontSize="16"
-				Command="{Binding Path=SaveCommand}"
-				CommandParameter="{Binding Path=Pack}"
+				Command="{Binding ConfigurePackViewModel.SaveCommand}"
 				/>
 			<Button 
 				Margin="30,0"
 				Width="70"
 				Content="Cancel"
 				FontSize="16"
-				IsCancel="True"
-				Command="{Binding Path=CancelCommand}"
+				Command="{Binding ClosePackEditCommand}"
 				/>
 		</StackPanel>
 	</Grid>

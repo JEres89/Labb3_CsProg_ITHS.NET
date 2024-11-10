@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Input;
+﻿using System.Windows.Input;
 
 namespace Labb3_CsProg_ITHS.NET.ViewModels
 {
@@ -17,7 +12,7 @@ namespace Labb3_CsProg_ITHS.NET.ViewModels
 			_canExecute = canExecute;
 		}
 
-		public void SetCanExecute(Func<object?, bool> canExecute)
+		public void SetCanExecute(Func<object?, bool>? canExecute)
 		{
 			_canExecute = canExecute;
 		}

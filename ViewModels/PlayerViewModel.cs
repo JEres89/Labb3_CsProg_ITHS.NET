@@ -5,6 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Labb3_CsProg_ITHS.NET.ViewModels;
-internal class PlayerViewModel
+public class PlayerViewModel
 {
 }
