@@ -1,12 +1,171 @@
-﻿<UserControl x:Class="Labb3_CsProg_ITHS.NET.Views.PlayerView"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:Labb3_CsProg_ITHS.NET.Views"
-             mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
-            
-    </Grid>
+﻿<UserControl 
+	x:Class="Labb3_CsProg_ITHS.NET.Views.PlayerView"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+	xmlns:sys="clr-namespace:System;assembly=System.Runtime"
+	xmlns:local="clr-namespace:Labb3_CsProg_ITHS.NET.Views"
+	xmlns:viewmodels="clr-namespace:Labb3_CsProg_ITHS.NET.ViewModels"
+	xmlns:models="clr-namespace:Labb3_CsProg_ITHS.NET.Models"
+	xmlns:assembly="clr-namespace:Labb3_CsProg_ITHS.NET"
+	
+	DataContext="{Binding PlayerViewModel}"
+	Visibility="{Binding IsPlaying, FallbackValue={x:Static Visibility.Collapsed}, Converter={StaticResource boolToVisibilityConverter}}"
+	IsEnabled="{Binding IsPlaying}"
+	
+	mc:Ignorable="d" 
+	d:DesignHeight="450" d:DesignWidth="800"
+	d:Background="White"
+	d:DataContext="{d:DesignInstance Type=viewmodels:PlayerViewModel}"
+	d:Visibility="Visible"
+	>
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="*" />
+			<RowDefinition Height="9*" />
+		</Grid.RowDefinitions>
+		<TextBlock  Text="{Binding QuizName}" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center" />
+
+		<Grid Grid.Row="1" VerticalAlignment="Stretch" Visibility="{Binding HasNotStarted, Converter={StaticResource boolToVisibilityConverter}}" IsEnabled="{Binding HasNotStarted}" >
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition />
+				<ColumnDefinition />
+			</Grid.ColumnDefinitions>
+			<Grid.RowDefinitions>
+				<RowDefinition Height="2*" />
+				<RowDefinition Height="2*" />
+				<RowDefinition Height="2*" />
+				<RowDefinition Height="2*" />
+			</Grid.RowDefinitions>
+
+			<TextBlock Text="Time per question: " FontSize="20" HorizontalAlignment="Right" VerticalAlignment="Center" />
+			<TextBlock Grid.Column="1" Text="{Binding TimeLimit}" FontSize="20" HorizontalAlignment="Left" VerticalAlignment="Center" TextAlignment="Left" />
+
+			<TextBlock Grid.Row="1" Text="Difficulty: " FontSize="20" HorizontalAlignment="Right" VerticalAlignment="Center" />
+			<TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Difficulty}" FontSize="20" HorizontalAlignment="Left" VerticalAlignment="Center" TextAlignment="Left" />
+
+			<TextBlock Grid.Row="2" Text="Questions: " FontSize="20" HorizontalAlignment="Right" VerticalAlignment="Center" />
+			<TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding NumberOfQuestions}" FontSize="20" HorizontalAlignment="Left" VerticalAlignment="Center" TextAlignment="Left" />
+
+			<Button Grid.Row="3" Grid.ColumnSpan="2" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="50,20" Content="Start Quiz" Command="{Binding StartQuizCommand, FallbackValue={x:Static assembly:App.DefaultCommand}}"/>
+		</Grid>
+
+		<Grid Grid.Row="1" VerticalAlignment="Stretch" Visibility="{Binding HasQuestion, Converter={StaticResource boolToVisibilityConverter}}" IsEnabled="{Binding HasQuestion}">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition />
+				<ColumnDefinition />
+			</Grid.ColumnDefinitions>
+			<Grid.RowDefinitions>
+				<RowDefinition Height="*" />
+				<RowDefinition Height="5*" />
+				<RowDefinition Height="3*" />
+				<RowDefinition Height="3*" />
+				<RowDefinition Height="2*" />
+			</Grid.RowDefinitions>
+
+			<StackPanel Orientation="Horizontal">
+				<TextBlock Text="On question "/>
+				<TextBlock Text="{Binding CurrentQuestion}"/>
+				<TextBlock Text=" of "/>
+				<TextBlock Text="{Binding NumberOfQuestions}"/>
+			</StackPanel>
+			
+			<TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding QuestionText}" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center" />
+
+			<Border Grid.Row="2" Grid.Column="0" Margin="22,12" CornerRadius="20" BorderThickness="4" Padding="4" Background="{Binding CorrectnessBrush1}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+				<Button 
+					Content="{Binding AnswerOption1}" FontSize="20" 
+					HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
+					Command="{Binding SelectAnswerCommand}">
+					<Button.CommandParameter>
+						<sys:Int32>0</sys:Int32>
+					</Button.CommandParameter>
+					<Button.Resources>
+						<Style TargetType="Border">
+							<Setter Property="CornerRadius" Value="15"/>
+						</Style>
+					</Button.Resources>
+				</Button>
+			</Border>
+
+			<Border Grid.Row="2" Grid.Column="1" Margin="22,12" CornerRadius="20" BorderThickness="4" Padding="4" Background="{Binding CorrectnessBrush2}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" >
+				<Button 
+					Content="{Binding AnswerOption2}" FontSize="20"
+					HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
+					Command="{Binding SelectAnswerCommand}">
+					<Button.CommandParameter>
+						<sys:Int32>1</sys:Int32>
+					</Button.CommandParameter>
+					<Button.Resources>
+						<Style TargetType="Border">
+							<Setter Property="CornerRadius" Value="15"/>
+						</Style>
+					</Button.Resources>
+				</Button>
+			</Border>
+
+			<Border Grid.Row="3" Grid.Column="0" Margin="22,12" CornerRadius="20" BorderThickness="4" Padding="4" Background="{Binding CorrectnessBrush3}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+				<Button 
+					Content="{Binding AnswerOption3}" FontSize="20" 
+					HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
+					Command="{Binding SelectAnswerCommand}" >
+					<Button.CommandParameter>
+						<sys:Int32>2</sys:Int32>
+					</Button.CommandParameter>
+					<Button.Resources>
+						<Style TargetType="Border">
+							<Setter Property="CornerRadius" Value="15"/>
+						</Style>
+					</Button.Resources>
+				</Button>
+			</Border>
+
+			<Border Grid.Row="3" Grid.Column="1" Margin="22,12" CornerRadius="20" BorderThickness="4" Padding="4" Background="{Binding CorrectnessBrush4}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+				<Button 
+					Content="{Binding AnswerOption4}" FontSize="20" 
+					HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
+					Command="{Binding SelectAnswerCommand}">
+					<Button.CommandParameter>
+						<sys:Int32>3</sys:Int32>
+					</Button.CommandParameter>
+					<Button.Resources>
+						<Style TargetType="Border">
+							<Setter Property="CornerRadius" Value="15"/>
+						</Style>
+					</Button.Resources>
+				</Button>
+			</Border>
+
+			<TextBlock Grid.Row="4"  Text="Time left: " FontSize="20" HorizontalAlignment="Right" VerticalAlignment="Center" />
+
+			<TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding TimeLeft}" FontSize="20" Width="50" HorizontalAlignment="Left" VerticalAlignment="Center" TextAlignment="Right" />
+			
+			<Button Grid.Row="4" Grid.Column="1" Content="{Binding NextBtnText}" FontSize="14" Padding="5,2" Margin="0,0,20,0" HorizontalAlignment="Right" VerticalAlignment="Center" Command="{Binding NextQuestionCommand}"/>
+			
+
+			<!--<Grid Grid.Row="3" Grid.ColumnSpan="2">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="*" />
+				<ColumnDefinition Width="*" />
+				<ColumnDefinition Width="*" />
+			</Grid.ColumnDefinitions>
+		</Grid>-->
+		</Grid>
+		<Grid Grid.Row="1" VerticalAlignment="Stretch" Visibility="{Binding HasFinished, Converter={StaticResource boolToVisibilityConverter}}" IsEnabled="{Binding HasFinished}">
+			<Grid.RowDefinitions>
+				<RowDefinition Height="2*" />
+				<RowDefinition Height="2*" />
+				<RowDefinition Height="2*" />
+			</Grid.RowDefinitions>
+			<TextBlock Text="Quiz finished!" FontSize="40" HorizontalAlignment="Center" VerticalAlignment="Center" />
+			<TextBlock Grid.Row="1" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="50,20">
+				<TextBlock Text="Your score: "/>
+				<TextBlock Text="{Binding Score}"/>
+				<TextBlock Text="/"/>
+				<TextBlock Text="{Binding NumberOfQuestions}"/>
+			</TextBlock>
+			<Button Grid.Row="2" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="20,10" Content="Finish Quiz" Command="{Binding MainViewModel.StopQuizCommand}"/>
+		</Grid>
+	</Grid>
 </UserControl>

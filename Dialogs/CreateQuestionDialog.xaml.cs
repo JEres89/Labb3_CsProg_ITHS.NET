@@ -25,7 +25,7 @@ public partial class CreateQuestionDialog : Window
 		SelectedQuestion = new Question();
 		DataContext = this;
 
-		Closing += (_, _) => SelectedQuestion = null;
+		Closing += (_, _) => SelectedQuestion = null!;
 
 		InitializeComponent();
 	}

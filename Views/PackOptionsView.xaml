@@ -4,11 +4,11 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-	xmlns:converters="clr-namespace:Labb3_CsProg_ITHS.NET.Converters"
 	xmlns:local="clr-namespace:Labb3_CsProg_ITHS.NET.Views"
 	xmlns:viewmodels="clr-namespace:Labb3_CsProg_ITHS.NET.ViewModels"
 	xmlns:dialogs="clr-namespace:Labb3_CsProg_ITHS.NET.Dialogs"
-	DataContext="{Binding ConfigurePackViewModel}"
+	xmlns:converters="clr-namespace:Labb3_CsProg_ITHS.NET.Converters"
+	xmlns:assembly="clr-namespace:Labb3_CsProg_ITHS.NET"
 	
 	mc:Ignorable="d"
 	d:DataContext="{d:DesignInstance Type=viewmodels:ConfigurePackViewModel}"

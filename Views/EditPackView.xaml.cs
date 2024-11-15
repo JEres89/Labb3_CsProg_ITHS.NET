@@ -11,18 +11,18 @@ namespace Labb3_CsProg_ITHS.NET.Views
 	public partial class EditPackView : UserControl
     {
 		//public bool IsActive => Pack != null;
-		public ConfigurePackViewModel? ViewModel
-		{
-			get
-			{
-				if(DataContext is ConfigurePackViewModel viewModel)
-				{
-					return viewModel;
-				}
-				return null;
-			}
-			set => DataContext = value;
-		}
+		//public ConfigurePackViewModel? ViewModel
+		//{
+		//	get
+		//	{
+		//		if(DataContext is ConfigurePackViewModel viewModel)
+		//		{
+		//			return viewModel;
+		//		}
+		//		return null;
+		//	}
+		//	set => DataContext = value;
+		//}
         //public RelayCommand? CloseCommand { get; set; }
         public EditPackView(/*QuestionPackVariant pack, RelayCommand cancelCommand*/)
         {

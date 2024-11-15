@@ -6,26 +6,38 @@
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
 	xmlns:local="clr-namespace:Labb3_CsProg_ITHS.NET.Views"
 	xmlns:viewmodels="clr-namespace:Labb3_CsProg_ITHS.NET.ViewModels"
+	xmlns:assembly="clr-namespace:Labb3_CsProg_ITHS.NET"
 	
 	mc:Ignorable="d" 
 	d:DataContext="{d:DesignInstance Type=viewmodels:MainWindowsViewModel}"
 	>
+	<!--<UserControl.Resources>
+		<StaticResource x:Key="defaultCommand" ResourceKey="{x:Static assembly:App.DefaultCommand}"/>
+	</UserControl.Resources>-->
 	<Grid>
 		<Menu>
 			<MenuItem Header="_File" >
 				<!--<MenuItem Command="ApplicationCommands.Open"/>-->
-				<MenuItem Header="Save changes" Command="{Binding ConfigViewModel.SaveChangesCommand}"/>
+				<MenuItem Header="_Load quizes" Command="{Binding LoadQuizesCommand}"/>
+				
+				<MenuItem Header="_Save changes" Command="{Binding ConfigViewModel.SaveChangesCommand, FallbackValue={x:Static assembly:App.DefaultCommand}}"/>
 
 			</MenuItem>
 			<MenuItem Header="_Edit">
-				<!--<MenuItem Command="ApplicationCommands.Cut"/>
-				<MenuItem Command="ApplicationCommands.Paste"/>-->
-				<MenuItem Header="Undo Quiz changes" Command="{Binding ConfigViewModel.UndoPackChangesCommand}"/>
-				<MenuItem Header="Edit Quiz" Command="{Binding ConfigViewModel.UndoPackChangesCommand}"/>
+				<MenuItem Header="Edit Quiz" Command="{Binding ConfigViewModel.EditPackCommand, FallbackValue={x:Static assembly:App.DefaultCommand}}"/>
+				
+				<MenuItem Header="Undo Quiz changes" Command="{Binding ConfigViewModel.UndoPackChangesCommand, FallbackValue={x:Static assembly:App.DefaultCommand}}"/>
+				
 			</MenuItem>
 			<MenuItem Header="_View">
-				<MenuItem Header="_Configuration Mode" Command=""/>
+				<MenuItem Header="_Configuration Mode" Command="{Binding ConfigModeCommand}"/>
+				
+				<MenuItem Header="_Close Configuration" Command="{Binding CloseConfigCommand}"/>
+				
 				<MenuItem Header="_Play Quiz" Command="{Binding PlayQuizCommand}"/>
+				
+				<MenuItem Header="_Stop Quiz" Command="{Binding StopQuizCommand}"/>
+				
 			</MenuItem>
 		</Menu>
 	</Grid>

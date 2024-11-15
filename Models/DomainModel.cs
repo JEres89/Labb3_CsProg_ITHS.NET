@@ -1,5 +1,7 @@
 ﻿
 
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Diagnostics;
 using System.IO;
 using System.Text.Json;
@@ -10,15 +12,20 @@ namespace Labb3_CsProg_ITHS.NET.Models
 	{
 		private static int _currentQuestionPackId = 0;
 		public static Dictionary<int, QuestionPack> QuestionPacks { get; private set; } = new();
+
+		public static event NotifyCollectionChangedEventHandler? CollectionChanged;
+
 		private static List<QuestionPack> changes = new();
 		private static JsonWriter writer;
 		static DomainModel() { 
 			writer = new("./QuizpackDatabase");
+			//Load();
 		}
 
 		public static bool Load()
 		{
 			writer.ReadAll();
+			CollectionChanged?.Invoke(QuestionPacks, new(NotifyCollectionChangedAction.Reset));
 			return QuestionPacks.Count > 0;
 		}
 		public static void Apply()
@@ -32,6 +39,8 @@ namespace Labb3_CsProg_ITHS.NET.Models
 			questionPack.ID = _currentQuestionPackId;
 			QuestionPacks.Add(_currentQuestionPackId++, questionPack);
 			changes.Add(questionPack);
+			CollectionChanged?.Invoke(questionPack, new(NotifyCollectionChangedAction.Add, questionPack));
+
 			return questionPack;
 		}
 
@@ -48,6 +57,9 @@ namespace Labb3_CsProg_ITHS.NET.Models
 				domainPack.TimeLimit = editedPack.TimeLimit;
 				domainPack.Questions = editedPack.Questions;
 				changes.Add(domainPack);
+
+				CollectionChanged?.Invoke(domainPack, new(NotifyCollectionChangedAction.Replace, domainPack, domainPack));
+
 				return domainPack;
 			}
 			else
@@ -64,6 +76,7 @@ namespace Labb3_CsProg_ITHS.NET.Models
 				throw new ArgumentException("Invalid question pack ID.");
 			}
 			QuestionPacks.Remove(questionPackId);
+			CollectionChanged?.Invoke(questionPack, new(NotifyCollectionChangedAction.Remove, questionPack));
 			changes.Add(questionPack);
 		}
 

@@ -12,23 +12,29 @@ namespace Labb3_CsProg_ITHS.NET.Views;
 /// </summary>
 public partial class ConfigurationView : UserControl
 {
-	private ConfigurationViewModel _viewModel;
+	private ConfigurationViewModel? _viewModel;
 
-	public ConfigurationViewModel ViewModel => _viewModel;
+	public ConfigurationViewModel? ViewModel => _viewModel;
 
 	public ConfigurationView()
 	{
-
-
 		DataContextChanged += ConfigurationView_DataContextChanged;
 		InitializeComponent();
 	}
 
 	private void ConfigurationView_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
 	{
-		if(DataContext is ConfigurationViewModel cfg)
+		if(DataContext != null && DataContext == _viewModel)
+		{
+			return;
+		}
+		else if(DataContext is ConfigurationViewModel cfg)
 		{
 			_viewModel = cfg;
+		}
+		else if(DataContext == null)
+		{
+			return;
 		}
 		else
 		{
@@ -36,12 +42,12 @@ public partial class ConfigurationView : UserControl
 		}
 
 		_viewModel.NewQuiz_ViewCommand = new(
-			_ => new CreatePackDialog(ViewModel.NewPackCommand).ShowDialog()
+			_ => new CreatePackDialog(_viewModel.NewPackCommand).ShowDialog()
 			);
 
 		_viewModel.NewQuestion_ViewCommand = new(
-			_ => new CreateQuestionDialog(ViewModel.NewQuestionCommand).ShowDialog(),
-			_ => ViewModel.NewQuestionCommand.CanExecute(_));
+			_ => new CreateQuestionDialog(_viewModel.NewQuestionCommand).ShowDialog(),
+			_ => _viewModel.NewQuestionCommand.CanExecute(_));
 	}
 
 		//_viewModel.EditQuiz_ViewCommand = new(

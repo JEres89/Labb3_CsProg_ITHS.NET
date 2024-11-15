@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace Labb3_CsProg_ITHS.NET.ViewModels;
 public abstract class ViewModelBase : INotifyPropertyChanged
@@ -15,4 +16,6 @@ public abstract class ViewModelBase : INotifyPropertyChanged
 	{
 		PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 	}
+
+
 }

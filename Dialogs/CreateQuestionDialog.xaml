@@ -7,6 +7,8 @@
     xmlns:local="clr-namespace:Labb3_CsProg_ITHS.NET.Dialogs"
     xmlns:views="clr-namespace:Labb3_CsProg_ITHS.NET.Views"
     xmlns:viewmodels="clr-namespace:Labb3_CsProg_ITHS.NET.ViewModels" 
+	xmlns:assembly="clr-namespace:Labb3_CsProg_ITHS.NET"
+	
     mc:Ignorable="d"
     d:DataContext="{d:DesignInstance Type=local:CreateQuestionDialog}" 
     Title="New Question" Height="350" Width="320" MinHeight="350" MinWidth="320">
@@ -26,7 +28,7 @@
 				Content="Create"
 				FontSize="16"
 				IsDefault="True"
-				Command="{Binding SaveCommand}"
+				Command="{Binding SaveCommand, FallbackValue={x:Static assembly:App.DefaultCommand}}"
 				CommandParameter="{Binding SelectedQuestion}"
 				/>
 			<Button 

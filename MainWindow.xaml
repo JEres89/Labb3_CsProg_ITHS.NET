@@ -9,6 +9,7 @@
 	xmlns:viewmodels="clr-namespace:Labb3_CsProg_ITHS.NET.ViewModels"
 	xmlns:dialogs="clr-namespace:Labb3_CsProg_ITHS.NET.Dialogs"
 	xmlns:models="clr-namespace:Labb3_CsProg_ITHS.NET.Models"
+	xmlns:assembly="clr-namespace:Labb3_CsProg_ITHS.NET"
 	
 	mc:Ignorable="d"
 	Title="MainWindow" Height="450" Width="800"
@@ -23,7 +24,78 @@
 		</Grid.RowDefinitions>
 		<views:MenuView />
 
-		<views:ConfigurationView Grid.Row="1"/>
-		<views:PlayerView Grid.Row="1" Visibility="Hidden"/>
+		<Grid Grid.Row="1" >
+			<Grid MaxHeight="30" HorizontalAlignment="Stretch" VerticalAlignment="Top" 
+				Visibility="{Binding IsInNoMode, Converter={StaticResource boolToVisibilityConverter}}"
+				>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="8.5*" />
+					<ColumnDefinition Width="*" />
+					<ColumnDefinition Width="*" />
+					<ColumnDefinition Width="3*" />
+					<ColumnDefinition Width="2*" />
+					<ColumnDefinition Width="0.5*" />
+				</Grid.ColumnDefinitions>
+
+				<TextBlock 
+					Text="Quiz: " 
+					Grid.Column="1" 
+					Margin="2" 
+					HorizontalAlignment="Stretch" 
+					TextAlignment="Justify" 
+					VerticalAlignment="Center" 
+					/>
+				
+				<Button 
+					Content="Load"
+					Grid.Column="2" 
+					Margin="2" 
+					HorizontalAlignment="Stretch" 
+					HorizontalContentAlignment="Center" 
+					VerticalAlignment="Stretch" 				
+					Command="{Binding LoadQuizesCommand}"
+					Visibility="{Binding HasNoQuizes, Converter={StaticResource boolToVisibilityConverter}}"
+					/>
+				<Button 
+					Content="Play" 
+					Grid.Column="2" 
+					Margin="2" 
+					HorizontalAlignment="Stretch" 
+					HorizontalContentAlignment="Center" 
+					VerticalAlignment="Stretch" 
+					Command="{Binding PlayQuizCommand}"
+					Visibility="{Binding HasQuizes, Converter={StaticResource boolToVisibilityConverter}}"
+					/>
+
+				<ComboBox 
+					Grid.Column="3" 
+					Margin="2" 
+					HorizontalAlignment="Stretch" 
+					HorizontalContentAlignment="Left" 
+					VerticalAlignment="Stretch" 
+					SelectedItem="{Binding SelectedPackModel, Mode=TwoWay}"
+					ItemsSource="{Binding QuestionPacks}"
+					>
+					<ComboBox.Resources>
+						<DataTemplate DataType="{x:Type models:QuestionPack}">
+							<TextBlock Text="{Binding Path=Name}" />
+						</DataTemplate>
+					</ComboBox.Resources>
+				</ComboBox>
+
+				<Button 
+					Content="Configure" 
+					Grid.Column="4" 
+					Margin="2" 
+					HorizontalAlignment="Stretch" 
+					HorizontalContentAlignment="Center" 
+					VerticalAlignment="Stretch"
+					Command="{Binding ConfigModeCommand}"
+					CommandParameter="{Binding SelectedPackModel}"
+					/>
+			</Grid>
+			<views:PlayerView Grid.Row="1" />
+			<views:ConfigurationView Grid.Row="1" />
+		</Grid>
 	</Grid>
 </Window>

@@ -8,6 +8,7 @@
 	xmlns:local="clr-namespace:Labb3_CsProg_ITHS.NET.Views"
 	xmlns:viewmodels="clr-namespace:Labb3_CsProg_ITHS.NET.ViewModels"
 	xmlns:dialogs="clr-namespace:Labb3_CsProg_ITHS.NET.Dialogs"
+	xmlns:assembly="clr-namespace:Labb3_CsProg_ITHS.NET"
 	
 	mc:Ignorable="d"
 	d:DataContext="{d:DesignInstance Type=viewmodels:ConfigurationViewModel}"
@@ -16,7 +17,7 @@
 	<UserControl.Resources>
 		<converters:TextboxLabelConverter x:Key="textboxLabelConverter" />
 	</UserControl.Resources>
-	<Grid IsEnabled="{Binding Path=SelectedPack.CanEditQuestions}" Margin="20,0" MaxWidth="300">
+	<Grid IsEnabled="{Binding Path=SelectedPack.CanEditQuestions, FallbackValue=true}" Margin="20,0" MaxWidth="300">
 		<Grid.RowDefinitions>
 			<RowDefinition Height="*"/>
 			<RowDefinition Height="*"/>
@@ -26,7 +27,7 @@
 
 		<TextBlock x:Name="HeaderBlock" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20" />
 
-		<StackPanel Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Center">
+		<StackPanel Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Stretch">
 			<Label Content="_Category:" FontSize="14"/>
 			<TextBox Text="{Binding Path=SelectedQuestion.Category, UpdateSourceTrigger=LostFocus}" FontSize="14" VerticalContentAlignment="Center" VerticalAlignment="Center" />
 		</StackPanel>

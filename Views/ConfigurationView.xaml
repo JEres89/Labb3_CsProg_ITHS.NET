@@ -9,39 +9,18 @@
 	xmlns:viewmodels="clr-namespace:Labb3_CsProg_ITHS.NET.ViewModels"
 	xmlns:dialogs="clr-namespace:Labb3_CsProg_ITHS.NET.Dialogs"
 	xmlns:models="clr-namespace:Labb3_CsProg_ITHS.NET.Models"
+	xmlns:converters="clr-namespace:Labb3_CsProg_ITHS.NET.Converters"
+	xmlns:assembly="clr-namespace:Labb3_CsProg_ITHS.NET"
+	
 	DataContext="{Binding ConfigViewModel}"
+	MinHeight="370" MinWidth="530"
+	Visibility="{Binding TargetNullValue=Hidden, Converter={StaticResource implicitConverter}}"
 	
 	mc:Ignorable="d"
 	d:DataContext="{d:DesignInstance Type=viewmodels:ConfigurationViewModel}"
-	d:DesignHeight="450" d:DesignWidth="800"
-	MinHeight="370" MinWidth="530"
->
-	
-	<UserControl.Resources>
-		<BooleanToVisibilityConverter x:Key="boolToVisibilityConverter"/>
-	</UserControl.Resources>
-	<!--<UserControl.Resources>
-		<DataTemplate DataType="{x:Type viewmodels:DomainQuestionPack}">
-			<TextBlock>
-				<TextBlock Text="  "/> <TextBlock Text="{Binding Path=Name}" />
-			</TextBlock>
-		</DataTemplate>
-		<DataTemplate DataType="{x:Type viewmodels:NewQuestionPack}">
-			<TextBlock>
-				<TextBlock Text="+ "/> <TextBlock Text="{Binding Path=Name}" />
-			</TextBlock>
-		</DataTemplate>
-		<DataTemplate DataType="{x:Type viewmodels:ModifiedQuestionPack}">
-			<TextBlock>
-				<TextBlock Text="* "/> <TextBlock Text="{Binding Path=Name}" />
-			</TextBlock>
-		</DataTemplate>
-		<DataTemplate DataType="{x:Type viewmodels:DeletedQuestionPack}">
-			<TextBlock>
-				<TextBlock Text="- "/> <TextBlock Text="{Binding Path=Name}" />
-			</TextBlock>
-		</DataTemplate>
-	</UserControl.Resources>-->
+	d:DesignHeight="450" d:DesignWidth="800" d:Background="White"
+	d:Visibility="Visible"
+><!--, ConverterParameter={x:Type viewmodels:ConfigurationViewModel}-->
 	<Grid >
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition Width="*" />
@@ -78,7 +57,7 @@
 				HorizontalAlignment="Stretch" 
 				HorizontalContentAlignment="Center" 
 				VerticalAlignment="Stretch" 
-				Command="{Binding EditQuestionsCommand}"
+				Command="{Binding EditQuestionsCommand, FallbackValue={x:Static assembly:App.DefaultCommand}}"
 				/>
 			
 			<Button 
@@ -88,7 +67,7 @@
 				HorizontalAlignment="Stretch" 
 				HorizontalContentAlignment="Center" 
 				VerticalAlignment="Stretch" 
-				Command="{Binding NewQuestion_ViewCommand}"
+				Command="{Binding NewQuestion_ViewCommand, FallbackValue={x:Static assembly:App.DefaultCommand}}"
 				/>
 			
 			<Button 
@@ -98,7 +77,7 @@
 				HorizontalAlignment="Stretch" 
 				HorizontalContentAlignment="Center" 
 				VerticalAlignment="Stretch" 				
-				Command="{Binding DeleteQuestionCommand}"
+				Command="{Binding DeleteQuestionCommand, FallbackValue={x:Static assembly:App.DefaultCommand}}"
 				/>
 			
 		</Grid>
@@ -140,9 +119,6 @@
 				SelectedItem="{Binding SelectedPack, Mode=TwoWay}"
 				IsEnabled="{Binding IsNotEditingQuiz}"
 				>
-				<!--<ComboBox.ItemTemplateSelector>
-					<local:QuizTemplateSelector/>
-				</ComboBox.ItemTemplateSelector>-->
 				<ComboBox.Resources>
 					<CollectionViewSource x:Key="newPacks" Source="{Binding NewPacks}" />
 					<CollectionViewSource x:Key="modifiedPacks" Source="{Binding ModifiedPacks}" />
@@ -155,18 +131,18 @@
 					</DataTemplate>
 					<DataTemplate DataType="{x:Type viewmodels:NewQuestionPack}">
 						<TextBlock>
-					<TextBlock Text="+ "/> <TextBlock Text="{Binding Path=Name}" />
-					</TextBlock>
+							<TextBlock Text="+ "/> <TextBlock Text="{Binding Path=Name}" />
+						</TextBlock>
 					</DataTemplate>
 					<DataTemplate DataType="{x:Type viewmodels:ModifiedQuestionPack}">
 						<TextBlock>
-					<TextBlock Text="* "/> <TextBlock Text="{Binding Path=Name}" />
-					</TextBlock>
+							<TextBlock Text="* "/> <TextBlock Text="{Binding Path=Name}" />
+						</TextBlock>
 					</DataTemplate>
 					<DataTemplate DataType="{x:Type viewmodels:DeletedQuestionPack}">
 						<TextBlock>
-					<TextBlock Text="- "/> <TextBlock Text="{Binding Path=Name}" />
-					</TextBlock>
+							<TextBlock Text="- "/> <TextBlock Text="{Binding Path=Name}" />
+						</TextBlock>
 					</DataTemplate>
 				</ComboBox.Resources>
 				<ComboBox.ItemsSource>
@@ -223,8 +199,6 @@
 			</ListView.ItemTemplate>
 		</ListView>
 		
-		
-
 		<local:EditPackView
 			x:Name="QuizPropertiesEdit"
 			Grid.Row="1" 

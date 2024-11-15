@@ -6,6 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:Labb3_CsProg_ITHS.NET.Views"
     xmlns:viewmodels="clr-namespace:Labb3_CsProg_ITHS.NET.ViewModels" 
+	xmlns:assembly="clr-namespace:Labb3_CsProg_ITHS.NET"
 	
     mc:Ignorable="d"
     d:DataContext="{d:DesignInstance Type=viewmodels:ConfigurationViewModel}" 
@@ -17,7 +18,7 @@
 			<RowDefinition Height="2*"/>
 		</Grid.RowDefinitions>
 
-		<local:PackOptionsView Grid.Row="0" Header="Edit Quiz settings"/>
+		<local:PackOptionsView Grid.Row="0" Header="Edit Quiz settings" DataContext="{Binding ConfigurePackViewModel}"/>
 
 		<StackPanel Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Horizontal">
 			<Button 
@@ -25,14 +26,14 @@
 				Width="70"
 				Content="Save"
 				FontSize="16"
-				Command="{Binding ConfigurePackViewModel.SaveCommand}"
+				Command="{Binding ConfigurePackViewModel.SaveCommand, FallbackValue={x:Static assembly:App.DefaultCommand}}"
 				/>
 			<Button 
 				Margin="30,0"
 				Width="70"
 				Content="Cancel"
 				FontSize="16"
-				Command="{Binding ClosePackEditCommand}"
+				Command="{Binding ClosePackEditCommand, FallbackValue={x:Static assembly:App.DefaultCommand}}"
 				/>
 		</StackPanel>
 	</Grid>

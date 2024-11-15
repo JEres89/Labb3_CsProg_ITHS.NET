@@ -40,6 +40,9 @@ public class QuestionPack
 	public string Name { get; set; }
 	public Difficulty Difficulty { get; set; }
 	public uint TimeLimit { get; set; }
+	// TODO: implement quiz category
+	//public string? Category { get; set; }
+
 	// TODO: Convert to a list of int IDs and store each question in the DomainModel
 	public List<Question> Questions { get; set; }
 

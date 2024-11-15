@@ -64,7 +64,7 @@ namespace Labb3_CsProg_ITHS.NET.ViewModels
 		public ConfigurePackViewModel(QuestionPackVariant pack, RelayCommand closeCommand)
 		{
 			Pack = pack;
-			Name = pack.Name;
+			_name = Name = pack.Name;
 			Difficulty = pack.Difficulty;
 			TimeLimit = pack.TimeLimit;
 

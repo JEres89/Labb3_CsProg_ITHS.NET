@@ -2,6 +2,8 @@
 using Labb3_CsProg_ITHS.NET.Models;
 using System.Collections.ObjectModel;
 using System.Runtime.Intrinsics.Arm;
+using System.Windows;
+using System.Windows.Data;
 using System.Windows.Media;
 
 namespace Labb3_CsProg_ITHS.NET.ViewModels;
@@ -21,7 +23,7 @@ public class ConfigurationViewModel : ViewModelBase
 	public ObservableCollection<NewQuestionPack> NewPacks { get; private set; } = new();
 	public ObservableCollection<ModifiedQuestionPack> ModifiedPacks { get; private set; } = new();
 	public ObservableCollection<DeletedQuestionPack> DeletedPacks { get; private set; } = new();
-
+	
     public bool IsNotEditingQuiz => ConfigurePackViewModel == null;
     public bool IsEditingQuiz => ConfigurePackViewModel != null;
     //public bool IsViewingQuiz => IsNotEditingQuiz && SelectedPack != null && SelectedQuestion == null;
@@ -187,13 +189,13 @@ public class ConfigurationViewModel : ViewModelBase
 			});
 		CanExecuteQuestionChanged += DeleteQuestionCommand.RaiseCanExecuteChanged;
 
-		if(DomainModel.Load())
+		//if(DomainModel.Load())
+		//{
+		foreach(var pack in DomainModel.QuestionPacks.Values)
 		{
-			foreach(var pack in DomainModel.QuestionPacks.Values)
-			{
-				Packs.Add(new(pack));
-			}
+			Packs.Add(new(pack));
 		}
+		//}
 	}
 #if DEBUG
 	//	//for(uint i = 0; i < 3; i++)
@@ -221,7 +223,15 @@ public class ConfigurationViewModel : ViewModelBase
 #else
 	//}
 #endif
+	public void DomainModelUpdated()
+	{
+		Packs.Clear();
 
+		foreach(var pack in DomainModel.QuestionPacks.Values)
+		{
+			Packs.Add(new(pack));
+		}
+	}
 	private void SaveToDomain(object? pack = null)
 	{
 		SelectedPack = null;
@@ -417,14 +427,14 @@ public class ConfigurationViewModel : ViewModelBase
 		EditPack();
 
 		if(SelectedPack.StartEditQuestions){
-			SelectedQuestion = index < 0 ? null : Questions[index];
+			SelectedQuestion = index < 0 ? null : Questions![index];
 			CanExecutePackChanged?.Invoke();
 			//OnPropertyChanged(nameof(Questions));
 			return;
 		}
 		else
 		{
-			SelectedQuestion = index < 0 ? null : Questions[index];
+			SelectedQuestion = index < 0 ? null : Questions![index];
 			CanExecutePackChanged?.Invoke();
 		}
 	}
@@ -459,4 +469,12 @@ public class ConfigurationViewModel : ViewModelBase
 		Questions!.Remove(SelectedQuestion!);
 		SelectedQuestion = null;
 	}
+
+	public static Visibility IsNull(ConfigurationViewModel? model) => model==null ? Visibility.Hidden : Visibility.Visible;
+
+	//public static implicit operator Visibility(ConfigurationViewModel? model) Visibility.Visible;
+
+	//public static explicit operator Visibility(ConfigurationViewModel model) =>  Visibility.Visible;
+
+	public static implicit operator Visibility(ConfigurationViewModel? model) => model==null ? Visibility.Hidden : Visibility.Visible;
 }
