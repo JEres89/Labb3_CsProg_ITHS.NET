@@ -25,6 +25,10 @@ namespace Labb3_CsProg_ITHS.NET.ViewModels
 
 		internal void RaiseCanExecuteChanged() => CanExecuteChanged?.Invoke(this, EventArgs.Empty);
 
+		//internal void ListenToCommand(RelayCommand command)  
+		//{
+		//	command.CanExecuteChanged += RaiseCanExecuteChanged;
+		//}
 		internal void ListenToSource(INotifyPropertyChanged source, params string[] propertyName)  
 		{
 			source.PropertyChanged += PropertyChanged;

@@ -3,7 +3,7 @@
 namespace Labb3_CsProg_ITHS.NET.Converters
 {
 	[ValueConversion(typeof(uint), typeof(string))]
-	public class TimeStringConverter : IValueConverter
+	public class IntStringConverter : IValueConverter
 	{
 		public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
 		{

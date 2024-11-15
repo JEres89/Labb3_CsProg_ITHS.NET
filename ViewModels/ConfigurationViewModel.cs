@@ -87,9 +87,10 @@ public class ConfigurationViewModel : ViewModelBase
 
 	public RelayCommand SaveChangesCommand { get; }
 
-	public RelayCommand? NewQuiz_ViewCommand { get; set; }
+	public RelayCommand? NewQuiz_ViewCommand { get; private set; }
 	//public RelayCommand? EditQuiz_ViewCommand { get; set; }
-	public RelayCommand? NewQuestion_ViewCommand { get; set; }
+	public RelayCommand? NewQuestion_ViewCommand { get; private set; }
+	public RelayCommand? ImportQuestions_ViewCommand { get; private set; }
 
 	public RelayCommand NewPackCommand { get; }
     public RelayCommand ClosePackEditCommand { get; }
@@ -97,6 +98,7 @@ public class ConfigurationViewModel : ViewModelBase
     public RelayCommand DeletePackCommand { get; }
     public RelayCommand UndoPackChangesCommand { get; }
 
+	public RelayCommand ImportQuestionsCommand { get; }
 	public RelayCommand NewQuestionCommand { get; }
 	public RelayCommand EditQuestionsCommand { get; }
 	public RelayCommand DeleteQuestionCommand { get; }
@@ -104,6 +106,7 @@ public class ConfigurationViewModel : ViewModelBase
 	private event Action CanExecutePackChanged;
 	private event Action CanExecuteQuestionChanged;
 
+	// TODO: move adding listening to RelayCommand.ListenToSource
 	public ConfigurationViewModel(MainWindowsViewModel mainVM)
     {
 
@@ -167,7 +170,24 @@ public class ConfigurationViewModel : ViewModelBase
 			});
 		CanExecutePackChanged += UndoPackChangesCommand.RaiseCanExecuteChanged;
 		CanExecuteQuestionChanged += UndoPackChangesCommand.RaiseCanExecuteChanged;
-		
+
+
+		ImportQuestionsCommand = new(
+			list =>
+			{
+				if(list is not List<Question> questions) return;
+				foreach(var question in questions)
+				{
+					Questions!.Add(question);
+				}
+			},
+			_ =>
+			{
+				return
+					SelectedPack is not null or DomainQuestionPack or DeletedQuestionPack &&
+					SelectedPack.CanEditQuestions;
+			});
+		ImportQuestionsCommand.ListenToSource(this, nameof(SelectedPack));
 
 		NewQuestionCommand = new(
 			question => CreateQuestion(question), 
@@ -189,40 +209,43 @@ public class ConfigurationViewModel : ViewModelBase
 			});
 		CanExecuteQuestionChanged += DeleteQuestionCommand.RaiseCanExecuteChanged;
 
-		//if(DomainModel.Load())
-		//{
 		foreach(var pack in DomainModel.QuestionPacks.Values)
 		{
 			Packs.Add(new(pack));
 		}
-		//}
 	}
-#if DEBUG
-	//	//for(uint i = 0; i < 3; i++)
-	//	//{
-	//	//	Packs.Add(new(new QuestionPack($"Question Pack {i}", (Difficulty)(i%3), 5*(i+1), MockQuestions(i))));
-	//	//}
-	//	for(uint i = 0; i < 6; i++)
-	//	{
-	//		NewPacks.Add(new(name: $"Question Pack {i}", (Difficulty)(i%3), 5*(i+1), new(MockQuestions(i))));
-	//	}
-	//}
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="command"></param>
+	/// <param name="num"></param>
+	public void SetViewCommand(RelayCommand command, int num)
+	{
+		switch(num)
+		{
+			case 1:
+				NewQuiz_ViewCommand = command;
+				//CanExecutePackChanged += command.RaiseCanExecuteChanged;
+				OnPropertyChanged(nameof(NewQuiz_ViewCommand));
+				break;
 
-	//private static int questionNum = 0;
+			case 2:
+				NewQuestion_ViewCommand = command;
+				CanExecutePackChanged += command.RaiseCanExecuteChanged;
+				OnPropertyChanged(nameof(NewQuestion_ViewCommand));
+				break;
 
-	//private static List<Question> MockQuestions(uint q)
-	//{
-	//	var questions = new List<Question>();
-	//	for(int i = questionNum; i < questionNum + 3; i++)
-	//	{
-	//		questions.Add(new Question($"Question {q}:{i}", "Answer", "Wrong", "Wrong", "Wrong" ));
-	//	}
-	//	questionNum += 3;
-	//	return questions;
-	//}
-#else
-	//}
-#endif
+			case 3:
+				ImportQuestions_ViewCommand = command;
+				CanExecutePackChanged += command.RaiseCanExecuteChanged;
+				OnPropertyChanged(nameof(ImportQuestions_ViewCommand)); 
+				break;
+
+			default:
+				break;
+		}
+	}
+
 	public void DomainModelUpdated()
 	{
 		Packs.Clear();
@@ -432,11 +455,11 @@ public class ConfigurationViewModel : ViewModelBase
 			//OnPropertyChanged(nameof(Questions));
 			return;
 		}
-		else
-		{
-			SelectedQuestion = index < 0 ? null : Questions![index];
-			CanExecutePackChanged?.Invoke();
-		}
+		//else
+		//{
+		//	SelectedQuestion = index < 0 ? null : Questions![index];
+		//	CanExecutePackChanged?.Invoke();
+		//}
 	}
 
 	/// <summary>

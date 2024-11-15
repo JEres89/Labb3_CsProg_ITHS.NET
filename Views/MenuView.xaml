@@ -28,6 +28,8 @@
 				
 				<MenuItem Header="Undo Quiz changes" Command="{Binding ConfigViewModel.UndoPackChangesCommand, FallbackValue={x:Static assembly:App.DefaultCommand}}"/>
 				
+				<MenuItem Header="Download Questions" Command="{Binding ConfigViewModel.ImportQuestions_ViewCommand, FallbackValue={x:Static assembly:App.DefaultCommand}}"/>
+				
 			</MenuItem>
 			<MenuItem Header="_View">
 				<MenuItem Header="_Configuration Mode" Command="{Binding ConfigModeCommand}"/>

@@ -176,6 +176,7 @@
 		</Grid>
 
 		<ListView 
+			x:Name="questionList"
 			Grid.Row="1" 
 			ItemsSource="{Binding SelectedPack.Questions, Mode=OneWay}"
 			SelectedItem="{Binding SelectedQuestion, Mode=TwoWay}"
@@ -184,16 +185,17 @@
 			VerticalAlignment="Stretch" 
 			VerticalContentAlignment="Stretch"
 			IsEnabled="{Binding IsNotEditingQuiz}"
+			ScrollViewer.HorizontalScrollBarVisibility="Disabled"
 			>
 			<ListView.ItemTemplate>
 				<DataTemplate DataType="{x:Type models:Question}">
 					<Grid >
 						<Grid.ColumnDefinitions>
 							<ColumnDefinition />
-							<ColumnDefinition Width="30" />
+							<ColumnDefinition Width="50" />
 						</Grid.ColumnDefinitions>
-						<TextBlock TextWrapping="NoWrap" Text="{Binding Path=QuestionText}" />
-						<TextBlock Text="{Binding Path=Difficulty}" Grid.Column="1" />
+						<TextBlock TextWrapping="Wrap" HorizontalAlignment="Stretch" Text="{Binding Path=QuestionText}" />
+						<TextBlock Text="{Binding Path=Difficulty}" Grid.Column="1" VerticalAlignment="Center"/>
 					</Grid>
 				</DataTemplate>
 			</ListView.ItemTemplate>

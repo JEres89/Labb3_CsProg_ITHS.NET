@@ -198,6 +198,8 @@ public class PlayerViewModel : ViewModelBase
 		_timer.Stop();
 		_timer.Tick -= Timer_Tick;
 		_currentQuestionIndex = -1;
+		_currentQuestion = null;
+		ResetAnswers();
 		OnPropertyChanged(null);
 		//QuizChanged();
 	}
@@ -208,7 +210,8 @@ public class PlayerViewModel : ViewModelBase
 		TimeLeft--;
 		if(_timeLeft < 1)
 		{
-			_isCorrect = false;
+			IsCorrect = false;
+			brushSetters[correctAnswer].Invoke(correctBrush);
 			StopQuestion();
 		}
 	}
@@ -309,6 +312,13 @@ public class PlayerViewModel : ViewModelBase
 		foreach(var brush in brushSetters)
 		{
 			brush.Invoke(null);
+		}
+	}
+	private void ResetAnswers()
+	{
+		for(int i = 0; i < _answers.Length; i++)
+		{
+			_answers[i] = string.Empty;
 		}
 	}
 

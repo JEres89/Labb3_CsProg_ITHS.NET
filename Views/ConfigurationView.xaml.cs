@@ -41,13 +41,20 @@ public partial class ConfigurationView : UserControl
 			throw new("Invalid DataContext");
 		}
 
-		_viewModel.NewQuiz_ViewCommand = new(
-			_ => new CreatePackDialog(_viewModel.NewPackCommand).ShowDialog()
-			);
+		var command = new RelayCommand(_ => new CreatePackDialog(_viewModel.NewPackCommand).ShowDialog());
+		_viewModel.SetViewCommand(command, 1);
 
-		_viewModel.NewQuestion_ViewCommand = new(
+		command = new(
 			_ => new CreateQuestionDialog(_viewModel.NewQuestionCommand).ShowDialog(),
 			_ => _viewModel.NewQuestionCommand.CanExecute(_));
+		//command.ListenToSource(_viewModel, nameof(_viewModel.NewQuestionCommand.CanExecuteChanged));
+		_viewModel.SetViewCommand(command, 2);
+
+		command = new(
+			_ => new DownloadOTDBDialog(_viewModel.ImportQuestionsCommand).ShowDialog(),
+			_ => _viewModel.ImportQuestionsCommand.CanExecute(_));
+		_viewModel.SetViewCommand(command, 3);
+
 	}
 
 		//_viewModel.EditQuiz_ViewCommand = new(

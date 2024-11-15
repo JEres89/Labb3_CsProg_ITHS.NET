@@ -177,21 +177,19 @@ namespace Labb3_CsProg_ITHS.NET.ViewModels
 
 		public override bool CanEditQuestions => questions != null;
 
+		
 		public override bool StartEditQuestions {
 			get
 			{
-				// If this gets evaluated during debug steping by hovering over StartEditQuestions,
-				// it will not work as expected.
 				if(questions == null)
 				{
 					var newQs = new ObservableCollection<Question>();
 					DomainPack.Questions.ForEach(q => newQs.Add(new(q)));
 					Questions = newQs;
 					OnPropertyChanged(nameof(CanEditQuestions));
-					return true;
 				}
 
-				return false;
+				return true;
 			}
 		}
 	}

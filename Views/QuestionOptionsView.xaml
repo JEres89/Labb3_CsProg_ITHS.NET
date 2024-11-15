@@ -27,9 +27,9 @@
 
 		<TextBlock x:Name="HeaderBlock" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20" />
 
-		<StackPanel Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Stretch">
-			<Label Content="_Category:" FontSize="14"/>
-			<TextBox Text="{Binding Path=SelectedQuestion.Category, UpdateSourceTrigger=LostFocus}" FontSize="14" VerticalContentAlignment="Center" VerticalAlignment="Center" />
+		<StackPanel Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Stretch" MaxWidth="300">
+			<Label Content="_Category:" FontSize="14" Width="70"/>
+			<TextBox Text="{Binding Path=SelectedQuestion.Category, UpdateSourceTrigger=LostFocus}" FontSize="14" VerticalContentAlignment="Center" VerticalAlignment="Center" TextWrapping="Wrap" Width="230"/>
 		</StackPanel>
 
 		<StackPanel Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Center" >

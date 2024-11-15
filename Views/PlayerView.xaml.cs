@@ -25,34 +25,4 @@ public partial class PlayerView : UserControl
 	{
 		InitializeComponent();
 	}
-
-	private void answerButton_IsEnabledChanged(object sender, DependencyPropertyChangedEventArgs e)
-	{
-		if(sender is Button button && button.CommandParameter is int answerNumber)
-		{
-			if(button.IsEnabled)
-			{
-				button.UpdateDefaultStyle();
-			}
-			else
-			{
-				switch(answerNumber)
-				{
-					case 1:
-						button.Background = (DataContext as PlayerViewModel).CorrectnessBrush1;
-						button.BorderBrush = (DataContext as PlayerViewModel).CorrectnessBrush1;
-						break;
-					case 2:
-						button.Background = (DataContext as PlayerViewModel).CorrectnessBrush2;
-						break;
-					case 3:
-						button.Background = (DataContext as PlayerViewModel).CorrectnessBrush3;
-						break;
-					case 4:
-						button.Background = (DataContext as PlayerViewModel).CorrectnessBrush4;
-						break;
-				}
-			}
-		}
-	}
 }

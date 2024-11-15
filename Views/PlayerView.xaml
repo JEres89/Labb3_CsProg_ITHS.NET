@@ -58,9 +58,9 @@
 			</Grid.ColumnDefinitions>
 			<Grid.RowDefinitions>
 				<RowDefinition Height="*" />
+				<RowDefinition Height="4*" />
 				<RowDefinition Height="5*" />
-				<RowDefinition Height="3*" />
-				<RowDefinition Height="3*" />
+				<RowDefinition Height="5*" />
 				<RowDefinition Height="2*" />
 			</Grid.RowDefinitions>
 
@@ -71,13 +71,15 @@
 				<TextBlock Text="{Binding NumberOfQuestions}"/>
 			</StackPanel>
 			
-			<TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding QuestionText}" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center" />
+			<TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding QuestionText}" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="Wrap"/>
 
-			<Border Grid.Row="2" Grid.Column="0" Margin="22,12" CornerRadius="20" BorderThickness="4" Padding="4" Background="{Binding CorrectnessBrush1}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+			<Border Grid.Row="2" Grid.Column="0" Margin="22,5" CornerRadius="20" BorderThickness="4" Padding="4" Background="{Binding CorrectnessBrush1}" HorizontalAlignment="Stretch" VerticalAlignment="Center" MinHeight="50">
 				<Button 
-					Content="{Binding AnswerOption1}" FontSize="20" 
 					HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
 					Command="{Binding SelectAnswerCommand}">
+					<Button.Content>
+						<TextBlock Text="{Binding AnswerOption1}" FontSize="14" TextWrapping="Wrap"/>
+					</Button.Content>
 					<Button.CommandParameter>
 						<sys:Int32>0</sys:Int32>
 					</Button.CommandParameter>
@@ -89,11 +91,13 @@
 				</Button>
 			</Border>
 
-			<Border Grid.Row="2" Grid.Column="1" Margin="22,12" CornerRadius="20" BorderThickness="4" Padding="4" Background="{Binding CorrectnessBrush2}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" >
+			<Border Grid.Row="2" Grid.Column="1" Margin="22,5" CornerRadius="20" BorderThickness="4" Padding="4" Background="{Binding CorrectnessBrush2}" HorizontalAlignment="Stretch" VerticalAlignment="Center" MinHeight="50">
 				<Button 
-					Content="{Binding AnswerOption2}" FontSize="20"
 					HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
 					Command="{Binding SelectAnswerCommand}">
+					<Button.Content>
+						<TextBlock Text="{Binding AnswerOption2}" FontSize="14" TextWrapping="Wrap"/>
+					</Button.Content>
 					<Button.CommandParameter>
 						<sys:Int32>1</sys:Int32>
 					</Button.CommandParameter>
@@ -105,11 +109,13 @@
 				</Button>
 			</Border>
 
-			<Border Grid.Row="3" Grid.Column="0" Margin="22,12" CornerRadius="20" BorderThickness="4" Padding="4" Background="{Binding CorrectnessBrush3}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+			<Border Grid.Row="3" Grid.Column="0" Margin="22,5" CornerRadius="20" BorderThickness="4" Padding="4" Background="{Binding CorrectnessBrush3}" HorizontalAlignment="Stretch" VerticalAlignment="Center" MinHeight="50">
 				<Button 
-					Content="{Binding AnswerOption3}" FontSize="20" 
 					HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
 					Command="{Binding SelectAnswerCommand}" >
+					<Button.Content>
+						<TextBlock Text="{Binding AnswerOption3}" FontSize="14" TextWrapping="Wrap"/>
+					</Button.Content>
 					<Button.CommandParameter>
 						<sys:Int32>2</sys:Int32>
 					</Button.CommandParameter>
@@ -121,11 +127,13 @@
 				</Button>
 			</Border>
 
-			<Border Grid.Row="3" Grid.Column="1" Margin="22,12" CornerRadius="20" BorderThickness="4" Padding="4" Background="{Binding CorrectnessBrush4}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+			<Border Grid.Row="3" Grid.Column="1" Margin="22,5" CornerRadius="20" BorderThickness="4" Padding="4" Background="{Binding CorrectnessBrush4}" HorizontalAlignment="Stretch" VerticalAlignment="Center" MinHeight="50">
 				<Button 
-					Content="{Binding AnswerOption4}" FontSize="20" 
 					HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
 					Command="{Binding SelectAnswerCommand}">
+					<Button.Content>
+						<TextBlock Text="{Binding AnswerOption4}" FontSize="14" TextWrapping="Wrap"/>
+					</Button.Content>
 					<Button.CommandParameter>
 						<sys:Int32>3</sys:Int32>
 					</Button.CommandParameter>

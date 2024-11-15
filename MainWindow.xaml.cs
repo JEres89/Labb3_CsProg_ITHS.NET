@@ -1,4 +1,5 @@
-﻿using Labb3_CsProg_ITHS.NET.ViewModels;
+﻿using Labb3_CsProg_ITHS.NET.Dialogs;
+using Labb3_CsProg_ITHS.NET.ViewModels;
 using System.Windows;
 
 namespace Labb3_CsProg_ITHS.NET;
@@ -11,5 +12,8 @@ public partial class MainWindow : Window
 	{
 		DataContext = new MainWindowsViewModel();
 		InitializeComponent();
+
+		//var dialog = new DownloadOTDBDialog();
+		//dialog.ShowDialog();
 	}
 }

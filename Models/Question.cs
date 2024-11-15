@@ -35,6 +35,15 @@ public class Question
 		IncorrectAnswerTwo = incorrectAnswerTwo;
 		IncorrectAnswerThree = incorrectAnswerThree;
 	}
+	public Question(/*int type,*/ Difficulty? difficulty, string category, string questionText, string correctAnswer, string[] incorrectAnswers)
+	{
+		//Type = type;
+		Difficulty = difficulty;
+		Category = category;
+		QuestionText = questionText;
+		CorrectAnswer = correctAnswer;
+		IncorrectAnswers = incorrectAnswers;
+	}
 
 	//public int Type { get; set; }
 
@@ -43,7 +52,8 @@ public class Question
 	public string QuestionText { get; set; }
 
 	public string CorrectAnswer { get; set; }
-	public string IncorrectAnswerOne { get; set; }
-	public string IncorrectAnswerTwo { get; set; }
-	public string IncorrectAnswerThree { get; set; }
+	public string IncorrectAnswerOne { get => IncorrectAnswers[0]; set => IncorrectAnswers[0] = value; }
+	public string IncorrectAnswerTwo { get => IncorrectAnswers[1]; set => IncorrectAnswers[1] = value; }
+	public string IncorrectAnswerThree { get => IncorrectAnswers[2]; set => IncorrectAnswers[2] = value; }
+	public string[] IncorrectAnswers = new string[3];
 }

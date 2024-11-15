@@ -137,6 +137,7 @@ namespace Labb3_CsProg_ITHS.NET.ViewModels
 		}
 		private static readonly DoubleCollection _diffSliderValues;
 		public DoubleCollection DiffSliderValues => _diffSliderValues;
+		public static DoubleCollection DiffSliderValuesStatic => _diffSliderValues;
 
 
 		//private void Pack_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)

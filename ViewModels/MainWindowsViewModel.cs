@@ -111,7 +111,7 @@ public class MainWindowsViewModel : ViewModelBase
 		CloseConfigCommand = new(
 			_ =>
 			{
-				_configurationViewModel!.ClosePackEditCommand.Execute(null);
+				_configurationViewModel?.ClosePackEditCommand.Execute(null);
 				_cachedConfigurationViewModel = _configurationViewModel;
 				ConfigViewModel = null;
 				OnPropertyChanged(null);
@@ -122,6 +122,7 @@ public class MainWindowsViewModel : ViewModelBase
 
 		PlayQuizCommand = new(
 			_ => {
+				CloseConfigCommand.Execute(_);
 				(PlayerViewModel??=(_cachedPlayerViewModel??new(this))).PlayQuiz(selectedPackIndex);
 				OnPropertyChanged(nameof(IsInNoMode));
 			},

@@ -12,10 +12,10 @@
 	
 	mc:Ignorable="d"
 	d:DataContext="{d:DesignInstance Type=viewmodels:ConfigurePackViewModel}"
-	d:DesignHeight="400" d:DesignWidth="400"
+	d:DesignHeight="400" d:DesignWidth="400" d:Background="White"
 >
 	<UserControl.Resources>
-		<converters:TimeStringConverter x:Key="timeStringConverter" />
+		<converters:IntStringConverter x:Key="timeStringConverter" />
 		<converters:DifficultyConverter x:Key="difficultyConverter" />
 	</UserControl.Resources>
 	<Grid>
